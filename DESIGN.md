@@ -32,20 +32,20 @@ sinking. Everything below is required for that loop to close.
 
 ### Functional requirements — what the program must do
 
-1. **F1.** Running the program starts a voyage: the game prints the opening scene, puts the ship at its home cove, and sets hull, crew, armour, weapon and gold to their starting values.
-2. **F2.** Typing `look` reads the current port, so the game prints its name, whether it is English, French or a pirate cove, what can be bought there, and every port reachable from it.
-3. **F3.** Typing `status` checks the ship, which prints hull out of maximum, crew count, armour rating, current weapon and gold.
-4. **F4.** Typing `sail <port>` moves the ship when that port is reachable from the current one, describing the crossing and rolling for one encounter on the way, and when the port is unreachable or misspelled it names the reachable ports and spends no turn.
-5. **F5.** Typing `repair <amount>` at a port buys hull back at the port's price per point, stopping at full hull or at the gold the player holds and reporting what was actually bought.
-6. **F6.** Typing `hire <count>` at a port adds that many crew at the port's price each, refusing the portion the player cannot pay for and saying how many came aboard.
-7. **F7.** Typing `buy <item>` where the port stocks it deducts the price, replaces the ship's current weapon or armour, and reports the old rating beside the new one.
-8. **F8.** Typing `fight` during an encounter resolves the battle in rounds, where damage dealt comes from the weapon and the surviving crew and damage taken is reduced by armour before it lands on hull and crew, until one side is out of the fight.
-9. **F9.** Typing `flee` during an encounter breaks it off, applying parting damage to the hull and giving no plunder.
-10. **F10.** Winning a fight takes plunder, so the game adds the defeated ship's gold to the player's, names the amount, and returns the player to sailing.
-11. **F11.** Letting hull or crew reach zero sinks the ship, and the game prints how it was lost and the final gold total before ending.
-12. **F12.** Typing `retire` at the home cove while holding at least the target gold wins the run, printing the ending, the gold total and the number of ports visited.
-13. **F13.** Typing `help` prints every command with its arguments.
-14. **F14.** Typing `quit` asks for confirmation and exits without saving.
+1. Running the program starts a voyage: the game prints the opening scene, puts the ship at its home cove, and sets hull, crew, armour, weapon and gold to their starting values.
+2. Typing `look` reads the current port, so the game prints its name, whether it is English, French or a pirate cove, what can be bought there, and every port reachable from it.
+3. Typing `status` checks the ship, which prints hull out of maximum, crew count, armour rating, current weapon and gold.
+4. Typing `sail <port>` moves the ship when that port is reachable from the current one, describing the crossing and rolling for one encounter on the way, and when the port is unreachable or misspelled it names the reachable ports and spends no turn.
+5. Typing `repair <amount>` at a port buys hull back at the port's price per point, stopping at full hull or at the gold the player holds and reporting what was actually bought.
+6. Typing `hire <count>` at a port adds that many crew at the port's price each, refusing the portion the player cannot pay for and saying how many came aboard.
+7. Typing `buy <item>` where the port stocks it deducts the price, replaces the ship's current weapon or armour, and reports the old rating beside the new one.
+8. Typing `fight` during an encounter resolves the battle in rounds, where damage dealt comes from the weapon and the surviving crew and damage taken is reduced by armour before it lands on hull and crew, until one side is out of the fight.
+9. Typing `flee` during an encounter breaks it off, applying parting damage to the hull and giving no plunder.
+10. Winning a fight takes plunder, so the game adds the defeated ship's gold to the player's, names the amount, and returns the player to sailing.
+11. Letting hull or crew reach zero sinks the ship, and the game prints how it was lost and the final gold total before ending.
+12. Typing `retire` at the home cove while holding at least the target gold wins the run, printing the ending, the gold total and the number of ports visited.
+13. Typing `help` prints every command with its arguments.
+14. Typing `quit` asks for confirmation and exits without saving.
 
 Starting values, prices, the gold target for retirement and the size of the port map
 are numbers the group still has to pick. They are placeholders until section 5's
@@ -53,23 +53,23 @@ unknowns are closed.
 
 ### Non-functional requirements — how the program must perform
 
-1. **N1.** The game runs as a console program on the lab Eclipse setup, reading typed lines and writing text with no window and no library outside the CS 2114 support projects, checked by the grader running the main class from a terminal.
-2. **N2.** No input ends the program by exception, because every command either takes effect or prints a message and prompts again, checked by a JUnit test that feeds the parser the cases listed in section 4 and asserts the game still accepts input.
-3. **N3.** All randomness comes from one generator the tests can seed, checked by a JUnit test asserting that two runs with the same seed and the same commands produce identical output.
-4. **N4.** The submission passes Web-CAT with full method coverage and no style warnings under `vtcseclipsestyle.xml`, checked by the Web-CAT submission report.
-5. **N5.** Every response fits one screen, wraps at 80 characters, and names the ship values it changed, checked by reading the transcript of a play session.
-6. **N6.** Game state lives in objects rather than static fields so a second game can start inside one run, checked by a JUnit test that plays a game to a loss, constructs a new game, and asserts the new ship is at full hull.
+1. The game runs as a console program on the lab Eclipse setup, reading typed lines and writing text with no window and no library outside the CS 2114 support projects, checked by the grader running the main class from a terminal.
+2. No input ends the program by exception, because every command either takes effect or prints a message and prompts again, checked by a JUnit test that feeds the parser the cases listed in section 4 and asserts the game still accepts input.
+3. All randomness comes from one generator the tests can seed, checked by a JUnit test asserting that two runs with the same seed and the same commands produce identical output.
+4. The submission passes Web-CAT with full method coverage and no style warnings under `vtcseclipsestyle.xml`, checked by the Web-CAT submission report.
+5. Every response fits one screen, wraps at 80 characters, and names the ship values it changed, checked by reading the transcript of a play session.
+6. Game state lives in objects rather than static fields so a second game can start inside one run, checked by a JUnit test that plays a game to a loss, constructs a new game, and asserts the new ship is at full hull.
 
 ## 3. Stretch goals
 
 things you'd add if there's time, separated from the MVP. These are the things that take you from “Meets” to “Exceeds”.
 Note: your TA will evaluate whether these stretch goals are truly non-essential but interesting and innovative features. Do not attempt to subvert this by making overly easy or achievable “exceeds” specifications.
 
-1. **S1.** Two-crown politics, where the player takes privateering contracts, holds a standing with England and with France that rises and falls with every raid, and is outlawed by whichever crown the player angers past its floor.
-2. **S2.** Buying an estate with the retirement gold and holding it through yearly tax demands and raids, replacing the ending that prints a score and stops.
-3. **S3.** TODO
+1. Two-crown politics, where the player takes privateering contracts, holds a standing with England and with France that rises and falls with every raid, and is outlawed by whichever crown the player angers past its floor.
+2. Buying an estate with the retirement gold and holding it through yearly tax demands and raids, replacing the ending that prints a score and stops.
+3. TODO
 
-### S1 in detail: the politics system
+### The politics system in detail
 
 The player is Eustace the Monk, who sold his seamanship to whichever crown paid, held
 the Channel Islands for the English, then changed sides and carried a French invasion
@@ -113,12 +113,13 @@ New commands this adds: `contracts` to list what the current port is offering, `
 `standing` to print where the player sits with each crown.
 
 
-### S2 in detail: buying an estate and holding it
+### The estate phase in detail
 
-In the MVP, `retire` ends the game. S2 turns that ending into a second phase the player
-has to survive. Once the player's gold passes the price of an estate, buying one sells
-the ship, converts the crew into retainers, and starts a yearly clock instead of a
-port-to-port one.
+In the MVP, `retire` ends the game. The estate phase turns that ending into a second
+phase the player has to survive. Once the player's gold passes the price of an
+estate, buying one sells the ship, converts the crew into retainers, and starts a
+yearly clock instead of a port-to-port one.
+
 
 Where the estate is bought decides what comes for it. An estate on English soil is
 taxed by the English crown at a rate set by English standing, and French raiding
@@ -143,8 +144,8 @@ prints the final score, or when the estate is lost. Losing it with the ship alre
 sold ends the game as a pauper; the group can decide whether a lost estate instead
 puts the player back to sea with a small boat and nothing else.
 
-Without S1 in place, tax rates are flat numbers and no crown confiscates the land, so
-S2 can be built and graded on its own.
+Without the politics system in place, tax rates are flat numbers and no crown
+confiscates the land, so the estate phase can be built and graded on its own.
 
 New commands this adds: `estates` to list what is for sale and at what price, `buy
 estate <place>` to retire onto it, `fortify <walls or retainers>` to spend on defence,
