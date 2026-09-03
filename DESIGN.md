@@ -11,10 +11,7 @@ Working title: a text based pirate adventure game
 
 ## 1. What are you building?
 
-*One paragraph a non-CS person could understand, complete but free of technical terms,
-with a specific spin rather than a generic category. The assignment's example: not "a
-flashcard app", but "a flashcard app that strategically gives you a mix of things you've
-gotten right before and things you tend to get wrong".*
+What are you building? One paragraph a non-CS person could understand. Challenge yourself to describe it without technical terms but while still being complete. Try to think of something with a fun spin on it. For example, don't just make "a flashcard app". Make "a flashcard app that strategically gives you a mix of things you've gotten right before and things you tend to get wrong".
 
 You play a pirate captain working the Channel between England and France. You give
 orders by typing them and the game answers in words. You sail from port to port, some
@@ -31,9 +28,7 @@ in a worse position than the one you were in before you won it.
 
 ## 2. What is the MVP?
 
-*The smallest version that actually works and solves the user's primary problem.
-Features must be specific components or actions ("add card", "add deck"), not
-collections of behaviour ("manages decks").*
+MVP (Minimum Viable Product) - Considering what core functionality is absolutely necessary to solve the user's primary problem. The smallest version that actually works. Take your description and transform it into a set of features your product should have. Consider what functional requirements (what your program must do) and non-functional requirements (how your program must perform) are a good fit for your project. Ensure your features are specific components or actions (e.g., add card, add deck) rather than very high level descriptions of collections of features (e.g., manages deck). 
 
 The smallest version that works is one voyage loop: read the port, sail somewhere,
 survive what you meet, spend what you took, and end the game by retiring rich or by
@@ -75,9 +70,8 @@ unknowns are closed.
 
 ## 3. Stretch goals
 
-*Features added only if there is time, kept out of the MVP. The TA judges whether each
-is genuinely non-essential and genuinely interesting, so a padded or trivial entry
-counts against the group.*
+things you'd add if there's time, separated from the MVP. These are the things that take you from “Meets” to “Exceeds”.
+Note: your TA will evaluate whether these stretch goals are truly non-essential but interesting and innovative features. Do not attempt to subvert this by making overly easy or achievable “exceeds” specifications.
 
 | # | Stretch goal | Why it is non-essential | Why it is interesting |
 |---|--------------|-------------------------|-----------------------|
