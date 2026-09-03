@@ -81,7 +81,54 @@ counts against the group.*
 
 | # | Stretch goal | Why it is non-essential | Why it is interesting |
 |---|--------------|-------------------------|-----------------------|
-| S1 | TODO | TODO | TODO |
+| S1 | Two-crown politics: privateering contracts, standing with England and with France, and outlawry when either standing falls far enough | The voyage loop in section 2 closes without it. Ports can stay neutral shops that sell repairs and crew to anyone, and the player can still sail, fight, plunder and retire | Every port stops being a shop and starts being a position. The player has to price a betrayal against the ports it will close, and we have to tune the French payout so that turning on England is worth taking at least once and ruinous as a habit |
+| S2 | TODO | TODO | TODO |
+| S3 | TODO | TODO | TODO |
+
+### S1 in detail: the politics system
+
+The player is Eustace the Monk, who sold his seamanship to whichever crown paid, held
+the Channel Islands for the English, then changed sides and carried a French invasion
+fleet against them. The game gives the player the same choice repeatedly and makes it
+cost something.
+
+**Setting note.** Eustace was captured and beheaded at Sandwich in 1217. The Hundred
+Years' War runs from 1337 to 1453, so the two cannot both be true. The group has to
+pick one before submission: keep Eustace and set the game in the Anglo-French war of
+1215 to 1217, or keep the Hundred Years' War and play a different captain. This
+document assumes the first.
+
+What the system adds on top of the MVP:
+
+1. **Two standings.** England and France each hold an opinion of the player, tracked
+   as a number that starts neutral. Sinking a French merchant raises English standing
+   and lowers French standing by a larger amount than it raises the other.
+
+2. **Contracts.** An English port offers a commission: sink a named French ship, or
+   escort a named convoy, for a stated purse. Taking it and finishing it pays the purse
+   and raises English standing. Taking it and then selling the target's position to
+   France pays a defection bounty instead, and drops English standing hard.
+
+3. **The defection bounty is the design problem.** France must offer enough that
+   betraying England is a live option rather than a trap, while the English ports the
+   player loses have to hurt enough that doing it every voyage ends the run. The group
+   has to set the purse, the bounty, the standing changes and the outlawry floor so
+   that a loyal privateer, a French-aligned raider and a captain who switches once are
+   all playable to retirement, and a captain who switches every time is not.
+
+4. **Outlawry.** When a standing drops below the floor, that crown declares the player
+   an outlaw: its ports refuse repair, refuse to sell, and refuse to hire crew, and its
+   warships attack on sight in its half of the Channel. Outlawed by both crowns, the
+   player can only refit at pirate coves, which charge more and stock less, so a hull
+   at half strength becomes expensive to fix and a lost crew becomes hard to replace.
+
+5. **Coming back in.** Standing recovers by paying tribute at that crown's port or by
+   completing a contract for it, at a slower rate than it fell, so a betrayal is
+   recoverable and never free.
+
+New commands this adds: `contracts` to list what the current port is offering, `accept
+<contract>` to take one, `betray <contract>` to sell it to the other crown, and
+`standing` to print where the player sits with each crown.
 
 ---
 
