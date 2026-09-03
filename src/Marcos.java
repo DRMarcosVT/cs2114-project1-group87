@@ -1,5 +1,5 @@
-public class Marcos {
+public class marcos {
     public static void main(String[] args) {
-        System.out.println("Marcos is on the team.");
+        System.out.println("Your Name is on the team.");
     }
 }
