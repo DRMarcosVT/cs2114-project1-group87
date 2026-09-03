@@ -16,14 +16,16 @@ with a specific spin rather than a generic category. The assignment's example: n
 flashcard app", but "a flashcard app that strategically gives you a mix of things you've
 gotten right before and things you tend to get wrong".*
 
-You play a pirate captain who gives orders by typing them, and the game answers in
-words. Your ship is the thing you build up and the thing you can lose: it has a hull
-that takes damage, a crew whose numbers rise and fall, armour that wears down, and
-weapons that set which fights you can survive. All four carry forward from one
-encounter to the next, so the ship you limp away in is the ship you start the next
-scene with. Nothing is repaired for free between scenes, so a victory that costs you
-half your crew and cracks your hull can leave you in a worse position than the one you
-were in before you won it.
+You play a pirate captain working the Channel between England and France. You give
+orders by typing them and the game answers in words. You sail from port to port, some
+of them English, some French, and some of them hidden coves where only pirates put in,
+and you choose where to go next and what to do when you get there. Your ship is the
+thing you build up and the thing you can lose: it has a hull that takes damage, a crew
+whose numbers rise and fall, armour that wears down, and weapons that set which fights
+you can survive. All four carry forward from one port to the next, so the ship you limp
+into harbour with is the ship you leave in. Nothing is repaired for free between
+voyages, so a victory that costs you half your crew and cracks your hull can leave you
+in a worse position than the one you were in before you won it.
 
 ---
 
