@@ -65,11 +65,9 @@ unknowns are closed.
 things you'd add if there's time, separated from the MVP. These are the things that take you from “Meets” to “Exceeds”.
 Note: your TA will evaluate whether these stretch goals are truly non-essential but interesting and innovative features. Do not attempt to subvert this by making overly easy or achievable “exceeds” specifications.
 
-| # | Stretch goal | Why it is non-essential | Why it is interesting |
-|---|--------------|-------------------------|-----------------------|
-| S1 | Two-crown politics: privateering contracts, standing with England and with France, and outlawry when either standing falls far enough | The voyage loop in section 2 closes without it. Ports can stay neutral shops that sell repairs and crew to anyone, and the player can still sail, fight, plunder and retire | Each port then either serves the player or refuses to, so a betrayal costs the repairs, crew and weapons the closed ports would have sold. We have to tune the French payout so that turning on England covers that loss once and bankrupts a captain who does it every voyage |
-| S2 | Buying an estate and holding it against tax collectors and raiders, in place of the ending that just prints a score | The MVP already ends cleanly at `retire`, and the voyage loop never needs a second phase to be playable | Stored gold can be taken by a raid, so the player has to spend it on walls and retainers or risk losing it. Where the estate is bought picks which enemy comes for it, and the tax rate on it is read from the S1 standing with that crown |
-| S3 | TODO | TODO | TODO |
+1. **S1.** Two-crown politics, where the player takes privateering contracts, holds a standing with England and with France that rises and falls with every raid, and is outlawed by whichever crown the player angers past its floor.
+2. **S2.** Buying an estate with the retirement gold and holding it through yearly tax demands and raids, replacing the ending that prints a score and stops.
+3. **S3.** TODO
 
 ### S1 in detail: the politics system
 
@@ -122,13 +120,13 @@ has to survive. Once the player's gold passes the price of an estate, buying one
 the ship, converts the crew into retainers, and starts a yearly clock instead of a
 port-to-port one.
 
-Where the estate is bought decides what comes for it:
-
-| Location | Who taxes it | Who raids it |
-|----------|--------------|--------------|
-| English soil | The English crown, at a rate set by English standing | French raiding parties, and pirates in a bad year |
-| French soil | The French crown, at a rate set by French standing | English raiding parties, and pirates in a bad year |
-| A pirate cove | Nobody, no tax at all | Other pirates, more often than anywhere else, and both navies when a crown decides the cove is worth burning |
+Where the estate is bought decides what comes for it. An estate on English soil is
+taxed by the English crown at a rate set by English standing, and French raiding
+parties come for it, with pirates arriving in a bad year. An estate on French soil is
+taxed by the French crown at a rate set by French standing, and the raiders are English
+instead. An estate at a pirate cove pays no tax to anyone, and other pirates raid it
+more often than they raid anywhere else, with both navies turning up when a crown
+decides the cove is worth burning.
 
 Each year the estate draws events against the player's gold and defences. The crown
 sends a tax demand: paying it costs gold and holds standing steady, while refusing
