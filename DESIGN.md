@@ -3,33 +3,23 @@
 CS 2114 Project 1 — Group 87
 Working title: a text based pirate adventure game
 
-Quoted blocks are the assignment's own wording. Everything outside them is our answer.
-
 ---
 
 ## 1. What are you building?
 
-> **Assignment prompt.** What are you building? One paragraph a non-CS person could understand. Challenge yourself to describe it without technical terms but while still being complete. Try to think of something with a fun spin on it. For example, don't just make "a flashcard app". Make "a flashcard app that strategically gives you a mix of things you've gotten right before and things you tend to get wrong".
+What are you building? One paragraph a non-CS person could understand. Challenge yourself to describe it without technical terms but while still being complete. Try to think of something with a fun spin on it. For example, don't just make "a flashcard app". Make "a flashcard app that strategically gives you a mix of things you've gotten right before and things you tend to get wrong".
 
-You play a pirate captain working the Channel between England and France. You give
-orders by typing them and the game answers in words. You sail from port to port, some
-of them English, some French, and some of them hidden coves where only pirates put in,
-and you choose where to go next and what to do when you get there. Your ship is the
-thing you build up and the thing you can lose: it has a hull that takes damage, a crew
-whose numbers rise and fall, armour that wears down, and weapons that set which fights
-you can survive. All four carry forward from one port to the next, and nothing is
-repaired for free between voyages, so a victory that costs you half your crew and
-cracks your hull can leave you in a worse position than the one you were in before you
-won it.
+You play a pirate captain sailing around the English Channel between England and France. You give
+orders to your men or make decisions by typing them and the game responds and describes the world around you as well as your context (specifically in combat) in words. You sail from port to port, English, French, and pirate coves,
+and you choose where to go next and what to do when you get there. You can also spend time in the ocean or channel but your ship attritions as you do and you may get attacked by other pirates and the coast guard. Your power is measured by the ship and your crew: crew members die or dessert, the ship's armour wears down, and ammunitions runs low. You can raid different kinds of ships to get more or less loot, as well as more or less notoriety (which determiens the difficulty of the game: how big enemy ships are, how common they are, etc.)
 
 ---
 
 ## 2. What is the MVP?
 
-> **Assignment prompt.** MVP (Minimum Viable Product) - Considering what core functionality is absolutely necessary to solve the user's primary problem. The smallest version that actually works. Take your description and transform it into a set of features your product should have. Consider what functional requirements (what your program must do) and non-functional requirements (how your program must perform) are a good fit for your project. Ensure your features are specific components or actions (e.g., add card, add deck) rather than very high level descriptions of collections of features (e.g., manages deck). 
+MVP (Minimum Viable Product) - Considering what core functionality is absolutely necessary to solve the user's primary problem. The smallest version that actually works. Take your description and transform it into a set of features your product should have. Consider what functional requirements (what your program must do) and non-functional requirements (how your program must perform) are a good fit for your project. Ensure your features are specific components or actions (e.g., add card, add deck) rather than very high level descriptions of collections of features (e.g., manages deck). 
 
-MVP: a survival adventure game. You try to be the biggest pirate in the Channel
-without being killed by the coast guard or other pirates, or arrested on shore.
+MVP: a survival adventure game. You try to be the biggest pirate in the channel without being killed by the coast guard or other pirates or arrested in shore. 
 
 ### Functional requirements — what the program must do
 
@@ -55,19 +45,15 @@ unknowns are closed.
 ### Non-functional requirements — how the program must perform
 
 1. The game runs as a console program on the lab Eclipse setup, reading typed lines and writing text with no window and no library outside the CS 2114 support projects, checked by the grader running the main class from a terminal.
-2. No input ends the program by exception, because every command either takes effect or prints a message and prompts again, checked by a JUnit test that feeds the parser the cases listed in section 4 and asserts the game still accepts input.
+2. No input ends the program by exception, because every command either takes effect or prints a message and prompts again, checked by a JUnit test that feeds the parser the cases listed in section 4 and asserts the game still accepts input. 
 3. All randomness comes from one generator the tests can seed, checked by a JUnit test asserting that two runs with the same seed and the same commands produce identical output.
-4. The submission passes Web-CAT with full method coverage and no style warnings under `vtcseclipsestyle.xml`, checked by the Web-CAT submission report.
 5. Every response fits one screen, wraps at 80 characters, and names the ship values it changed, checked by reading the transcript of a play session.
 6. Game state lives in objects rather than static fields so a second game can start inside one run, checked by a JUnit test that plays a game to a loss, constructs a new game, and asserts the new ship is at full hull.
 
----
-
 ## 3. Stretch goals
 
-> **Assignment prompt.** Things you'd add if there's time, separated from the MVP. These are the things that take you from “Meets” to “Exceeds”.
->
-> Note: your TA will evaluate whether these stretch goals are truly non-essential but interesting and innovative features. Do not attempt to subvert this by making overly easy or achievable “exceeds” specifications.
+things you'd add if there's time, separated from the MVP. These are the things that take you from “Meets” to “Exceeds”.
+Note: your TA will evaluate whether these stretch goals are truly non-essential but interesting and innovative features. Do not attempt to subvert this by making overly easy or achievable “exceeds” specifications.
 
 1. Two-crown politics, where the player takes privateering contracts, holds a standing with England and with France that rises and falls with every raid, and is outlawed by whichever crown the player angers past its floor.
 2. Buying an estate with the retirement gold and holding it through yearly tax demands and raids, replacing the ending that prints a score and stops.
@@ -120,10 +106,9 @@ New commands this adds: `contracts` to list what the current port is offering, `
 ### The estate phase in detail
 
 In the MVP, `retire` ends the game. The estate phase turns that ending into a second
-phase the player has to survive. Once the player's gold passes the price of an
-estate, buying one sells the ship, converts the crew into retainers, and starts a
-yearly clock instead of a port-to-port one.
-
+phase the player has to survive. Once the player's gold passes the price of an estate, buying one sells
+the ship, converts the crew into retainers, and starts a yearly clock instead of a
+port-to-port one.
 
 Where the estate is bought decides what comes for it. An estate on English soil is
 taxed by the English crown at a rate set by English standing, and French raiding
@@ -160,40 +145,22 @@ estate's walls, retainers, stored gold and years held.
 
 ## 4. What bad input must it survive?
 
-> **Assignment prompt.** What bad input must it survive? Name the specific cases.
-> Think of what poorly behaved or adversarial users might try to do with your
-> system! Try to include several, adversarial examples for completeness.
+*Named cases, including adversarial ones: what a careless player types by accident and
+what a hostile player types on purpose.*
 
-| # | Input | Where it arrives | Required response |
-|---|-------|------------------|-------------------|
-| B1 | TODO | TODO | TODO |
+
 
 ---
 
 ## 5. What don't you know how to do yet?
 
-> **Assignment prompt.** What don't you know how to do yet? Be honest! Metacognating
-> and discussing this point will help you figure out the best questions to ask your
-> teammates, or for you and your teammates to collectively ask GenAI. Ensure you
-> include a plan for how you will, as a team, meet to learn about and address these
-> unknowns.
 
 ### Open unknowns
 
-| # | Unknown | Who is blocked by it | How we expect to resolve it |
-|---|---------|----------------------|-----------------------------|
-| U1 | TODO | TODO | TODO |
+
 
 ### Plan for addressing them
 
 TODO — when the group meets, who brings what, which unknowns go to the TA or to office
 hours, and which the group researches first.
 
----
-
-## Team
-
-| Name | GitHub | Responsibilities |
-|------|--------|------------------|
-| Marcos Salas | DRMarcosVT | TODO |
-| Aidan | aidanmc906678698 | TODO |
