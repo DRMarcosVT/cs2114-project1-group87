@@ -3,11 +3,13 @@
 CS 2114 Project 1 — Group 87
 Working title: a text based pirate adventure game
 
+Quoted blocks are the assignment's own wording. Everything outside them is our answer.
+
 ---
 
 ## 1. What are you building?
 
-What are you building? One paragraph a non-CS person could understand. Challenge yourself to describe it without technical terms but while still being complete. Try to think of something with a fun spin on it. For example, don't just make "a flashcard app". Make "a flashcard app that strategically gives you a mix of things you've gotten right before and things you tend to get wrong".
+> **Assignment prompt.** What are you building? One paragraph a non-CS person could understand. Challenge yourself to describe it without technical terms but while still being complete. Try to think of something with a fun spin on it. For example, don't just make "a flashcard app". Make "a flashcard app that strategically gives you a mix of things you've gotten right before and things you tend to get wrong".
 
 You play a pirate captain working the Channel between England and France. You give
 orders by typing them and the game answers in words. You sail from port to port, some
@@ -24,7 +26,7 @@ won it.
 
 ## 2. What is the MVP?
 
-MVP (Minimum Viable Product) - Considering what core functionality is absolutely necessary to solve the user's primary problem. The smallest version that actually works. Take your description and transform it into a set of features your product should have. Consider what functional requirements (what your program must do) and non-functional requirements (how your program must perform) are a good fit for your project. Ensure your features are specific components or actions (e.g., add card, add deck) rather than very high level descriptions of collections of features (e.g., manages deck). 
+> **Assignment prompt.** MVP (Minimum Viable Product) - Considering what core functionality is absolutely necessary to solve the user's primary problem. The smallest version that actually works. Take your description and transform it into a set of features your product should have. Consider what functional requirements (what your program must do) and non-functional requirements (how your program must perform) are a good fit for your project. Ensure your features are specific components or actions (e.g., add card, add deck) rather than very high level descriptions of collections of features (e.g., manages deck). 
 
 The smallest version that works is one voyage loop: read the port, sail somewhere,
 survive what you meet, spend what you took, and end the game by retiring rich or by
@@ -60,10 +62,13 @@ unknowns are closed.
 5. Every response fits one screen, wraps at 80 characters, and names the ship values it changed, checked by reading the transcript of a play session.
 6. Game state lives in objects rather than static fields so a second game can start inside one run, checked by a JUnit test that plays a game to a loss, constructs a new game, and asserts the new ship is at full hull.
 
+---
+
 ## 3. Stretch goals
 
-things you'd add if there's time, separated from the MVP. These are the things that take you from “Meets” to “Exceeds”.
-Note: your TA will evaluate whether these stretch goals are truly non-essential but interesting and innovative features. Do not attempt to subvert this by making overly easy or achievable “exceeds” specifications.
+> **Assignment prompt.** Things you'd add if there's time, separated from the MVP. These are the things that take you from “Meets” to “Exceeds”.
+>
+> Note: your TA will evaluate whether these stretch goals are truly non-essential but interesting and innovative features. Do not attempt to subvert this by making overly easy or achievable “exceeds” specifications.
 
 1. Two-crown politics, where the player takes privateering contracts, holds a standing with England and with France that rises and falls with every raid, and is outlawed by whichever crown the player angers past its floor.
 2. Buying an estate with the retirement gold and holding it through yearly tax demands and raids, replacing the ending that prints a score and stops.
@@ -156,8 +161,9 @@ estate's walls, retainers, stored gold and years held.
 
 ## 4. What bad input must it survive?
 
-*Named cases, including adversarial ones: what a careless player types by accident and
-what a hostile player types on purpose.*
+> **Assignment prompt.** What bad input must it survive? Name the specific cases.
+> Think of what poorly behaved or adversarial users might try to do with your
+> system! Try to include several, adversarial examples for completeness.
 
 | # | Input | Where it arrives | Required response |
 |---|-------|------------------|-------------------|
@@ -167,6 +173,11 @@ what a hostile player types on purpose.*
 
 ## 5. What don't you know how to do yet?
 
+> **Assignment prompt.** What don't you know how to do yet? Be honest! Metacognating
+> and discussing this point will help you figure out the best questions to ask your
+> teammates, or for you and your teammates to collectively ask GenAI. Ensure you
+> include a plan for how you will, as a team, meet to learn about and address these
+> unknowns.
 
 ### Open unknowns
 
