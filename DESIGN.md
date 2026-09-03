@@ -15,10 +15,10 @@ of them English, some French, and some of them hidden coves where only pirates p
 and you choose where to go next and what to do when you get there. Your ship is the
 thing you build up and the thing you can lose: it has a hull that takes damage, a crew
 whose numbers rise and fall, armour that wears down, and weapons that set which fights
-you can survive. All four carry forward from one port to the next, so the ship you limp
-into harbour with is the ship you leave in. Nothing is repaired for free between
-voyages, so a victory that costs you half your crew and cracks your hull can leave you
-in a worse position than the one you were in before you won it.
+you can survive. All four carry forward from one port to the next, and nothing is
+repaired for free between voyages, so a victory that costs you half your crew and
+cracks your hull can leave you in a worse position than the one you were in before you
+won it.
 
 ---
 
@@ -32,22 +32,20 @@ sinking. Everything below is required for that loop to close.
 
 ### Functional requirements — what the program must do
 
-| # | Feature | What the player does | What the program does in response |
-|---|---------|----------------------|-----------------------------------|
-| F1 | Start a voyage | Runs the program | Prints the opening scene, puts the ship at its home cove, and sets hull, crew, armour, weapon and gold to their starting values |
-| F2 | Read the current port | Types `look` | Prints the port's name, whether it is English, French or a pirate cove, what can be bought there, and every port reachable from it |
-| F3 | Check the ship | Types `status` | Prints hull out of maximum, crew count, armour rating, current weapon and gold |
-| F4 | Sail to another port | Types `sail <port>` | Moves the ship when that port is reachable from the current one, describes the crossing, and rolls for one encounter on the way; when the port is unreachable or misspelled, says so and lists the reachable ports without spending a turn |
-| F5 | Repair the hull | Types `repair <amount>` at any port | Restores that much hull at the port's price per point, stopping at full hull or at the gold the player holds, and reports what was actually bought |
-| F6 | Hire crew | Types `hire <count>` at any port | Adds that many crew at the port's price each, refusing the portion the player cannot pay for and saying how many were hired |
-| F7 | Buy a weapon or armour | Types `buy <item>` where the port sells it | Deducts the price, replaces the ship's current weapon or armour, and reports the old rating and the new one |
-| F8 | Fight an encounter | Types `fight` when an enemy is present | Resolves the fight in rounds: damage dealt comes from the weapon and the surviving crew, damage taken is reduced by armour and lands on hull and crew, until one side is out of the fight |
-| F9 | Break off an encounter | Types `flee` when an enemy is present | Ends the encounter, applies parting damage to the hull, and gives no plunder |
-| F10 | Take plunder | Wins a fight | Adds the defeated ship's gold to the player's, names the amount, and returns the player to sailing |
-| F11 | Sink | Lets hull reach zero or crew reach zero | Prints how the ship was lost, the final gold total, and ends the game |
-| F12 | Retire | Types `retire` at the home cove while holding at least the target gold | Prints the ending, the gold total and the number of ports visited, and ends the game |
-| F13 | List the commands | Types `help` | Prints every command with its arguments |
-| F14 | Leave the game | Types `quit` | Asks for confirmation and exits without saving |
+1. **F1.** Running the program starts a voyage: the game prints the opening scene, puts the ship at its home cove, and sets hull, crew, armour, weapon and gold to their starting values.
+2. **F2.** Typing `look` reads the current port, so the game prints its name, whether it is English, French or a pirate cove, what can be bought there, and every port reachable from it.
+3. **F3.** Typing `status` checks the ship, which prints hull out of maximum, crew count, armour rating, current weapon and gold.
+4. **F4.** Typing `sail <port>` moves the ship when that port is reachable from the current one, describing the crossing and rolling for one encounter on the way, and when the port is unreachable or misspelled it names the reachable ports and spends no turn.
+5. **F5.** Typing `repair <amount>` at a port buys hull back at the port's price per point, stopping at full hull or at the gold the player holds and reporting what was actually bought.
+6. **F6.** Typing `hire <count>` at a port adds that many crew at the port's price each, refusing the portion the player cannot pay for and saying how many came aboard.
+7. **F7.** Typing `buy <item>` where the port stocks it deducts the price, replaces the ship's current weapon or armour, and reports the old rating beside the new one.
+8. **F8.** Typing `fight` during an encounter resolves the battle in rounds, where damage dealt comes from the weapon and the surviving crew and damage taken is reduced by armour before it lands on hull and crew, until one side is out of the fight.
+9. **F9.** Typing `flee` during an encounter breaks it off, applying parting damage to the hull and giving no plunder.
+10. **F10.** Winning a fight takes plunder, so the game adds the defeated ship's gold to the player's, names the amount, and returns the player to sailing.
+11. **F11.** Letting hull or crew reach zero sinks the ship, and the game prints how it was lost and the final gold total before ending.
+12. **F12.** Typing `retire` at the home cove while holding at least the target gold wins the run, printing the ending, the gold total and the number of ports visited.
+13. **F13.** Typing `help` prints every command with its arguments.
+14. **F14.** Typing `quit` asks for confirmation and exits without saving.
 
 Starting values, prices, the gold target for retirement and the size of the port map
 are numbers the group still has to pick. They are placeholders until section 5's
@@ -55,14 +53,12 @@ unknowns are closed.
 
 ### Non-functional requirements — how the program must perform
 
-| # | Requirement | How it is measured |
-|---|-------------|--------------------|
-| N1 | Runs as a console program on the lab Eclipse setup, reading typed lines and writing text, with no window and no library outside the CS 2114 support projects | The grader runs the main class and plays it from the terminal |
-| N2 | No input ends the program by exception; every command either takes effect or prints a message and prompts again | A JUnit test feeds the parser the cases listed in section 4 and asserts the game is still accepting input afterwards |
-| N3 | All randomness comes from one generator the tests can seed | Two runs with the same seed and the same commands produce identical output, asserted in a JUnit test |
-| N4 | Passes Web-CAT with full method coverage and no style warnings under `vtcseclipsestyle.xml` | The Web-CAT submission report |
-| N5 | Every response fits one screen, wrapped at 80 characters, and names the ship values it changed | Read from the transcript of a play session |
-| N6 | Game state lives in objects rather than static fields, so a second game can be started inside one run | A JUnit test plays a game to a loss, constructs a new game, and asserts the new ship is at full hull |
+1. **N1.** The game runs as a console program on the lab Eclipse setup, reading typed lines and writing text with no window and no library outside the CS 2114 support projects, checked by the grader running the main class from a terminal.
+2. **N2.** No input ends the program by exception, because every command either takes effect or prints a message and prompts again, checked by a JUnit test that feeds the parser the cases listed in section 4 and asserts the game still accepts input.
+3. **N3.** All randomness comes from one generator the tests can seed, checked by a JUnit test asserting that two runs with the same seed and the same commands produce identical output.
+4. **N4.** The submission passes Web-CAT with full method coverage and no style warnings under `vtcseclipsestyle.xml`, checked by the Web-CAT submission report.
+5. **N5.** Every response fits one screen, wraps at 80 characters, and names the ship values it changed, checked by reading the transcript of a play session.
+6. **N6.** Game state lives in objects rather than static fields so a second game can start inside one run, checked by a JUnit test that plays a game to a loss, constructs a new game, and asserts the new ship is at full hull.
 
 ## 3. Stretch goals
 
@@ -71,50 +67,48 @@ Note: your TA will evaluate whether these stretch goals are truly non-essential 
 
 | # | Stretch goal | Why it is non-essential | Why it is interesting |
 |---|--------------|-------------------------|-----------------------|
-| S1 | Two-crown politics: privateering contracts, standing with England and with France, and outlawry when either standing falls far enough | The voyage loop in section 2 closes without it. Ports can stay neutral shops that sell repairs and crew to anyone, and the player can still sail, fight, plunder and retire | Every port stops being a shop and starts being a position. The player has to price a betrayal against the ports it will close, and we have to tune the French payout so that turning on England is worth taking at least once and ruinous as a habit |
-| S2 | Buying an estate and holding it against tax collectors and raiders, in place of the ending that just prints a score | The MVP already ends cleanly at `retire`, and the voyage loop never needs a second phase to be playable | Gold stops being a score and becomes something the player has to defend. Where the estate is bought picks which enemy comes for it, so the choice pays off against the standings from S1 and against how much the player is willing to leave in the strongbox |
+| S1 | Two-crown politics: privateering contracts, standing with England and with France, and outlawry when either standing falls far enough | The voyage loop in section 2 closes without it. Ports can stay neutral shops that sell repairs and crew to anyone, and the player can still sail, fight, plunder and retire | Each port then either serves the player or refuses to, so a betrayal costs the repairs, crew and weapons the closed ports would have sold. We have to tune the French payout so that turning on England covers that loss once and bankrupts a captain who does it every voyage |
+| S2 | Buying an estate and holding it against tax collectors and raiders, in place of the ending that just prints a score | The MVP already ends cleanly at `retire`, and the voyage loop never needs a second phase to be playable | Stored gold can be taken by a raid, so the player has to spend it on walls and retainers or risk losing it. Where the estate is bought picks which enemy comes for it, and the tax rate on it is read from the S1 standing with that crown |
 | S3 | TODO | TODO | TODO |
 
 ### S1 in detail: the politics system
 
 The player is Eustace the Monk, who sold his seamanship to whichever crown paid, held
 the Channel Islands for the English, then changed sides and carried a French invasion
-fleet against them. The game gives the player the same choice repeatedly and makes it
-cost something.
+fleet against them. The game gives the player the same choice repeatedly.
 
 **Setting note.** Eustace was captured and beheaded at Sandwich in 1217. The Hundred
 Years' War runs from 1337 to 1453, so the two cannot both be true. The group has to
-pick one before submission: keep Eustace and set the game in the Anglo-French war of
-1215 to 1217, or keep the Hundred Years' War and play a different captain. This
-document assumes the first.
+pick one before submission: keep Eustace and set the game during the French invasion
+of England, 1216 to 1217, or keep the Hundred Years' War and play a different captain.
+This document assumes the first.
 
 What the system adds on top of the MVP:
 
-1. **Two standings.** England and France each hold an opinion of the player, tracked
-   as a number that starts neutral. Sinking a French merchant raises English standing
-   and lowers French standing by a larger amount than it raises the other.
+1. England and France each hold an opinion of the player, tracked as a number that
+   starts neutral. Sinking a French merchant raises English standing and lowers French
+   standing, with the French drop larger than the English rise.
 
-2. **Contracts.** An English port offers a commission: sink a named French ship, or
-   escort a named convoy, for a stated purse. Taking it and finishing it pays the purse
-   and raises English standing. Taking it and then selling the target's position to
-   France pays a defection bounty instead, and drops English standing hard.
+2. An English port offers a commission: sink a named French ship, or escort a named
+   convoy, for a stated purse. Taking it and finishing it pays the purse and raises
+   English standing. Taking it and then selling the target's position to France pays a
+   defection bounty instead, and drops English standing hard.
 
-3. **The defection bounty is the design problem.** France must offer enough that
-   betraying England is a live option rather than a trap, while the English ports the
-   player loses have to hurt enough that doing it every voyage ends the run. The group
-   has to set the purse, the bounty, the standing changes and the outlawry floor so
-   that a loyal privateer, a French-aligned raider and a captain who switches once are
-   all playable to retirement, and a captain who switches every time is not.
+3. Each crown has a floor. When a standing drops below that crown's floor, it declares
+   the player an outlaw: its ports refuse repair, refuse to sell, and refuse to hire
+   crew, and its warships attack on sight in its half of the Channel. Outlawed by both
+   crowns, the player can only refit at pirate coves, which charge more for hull repair
+   and crew than any crown port and carry a smaller stock of weapons and armour.
 
-4. **Outlawry.** When a standing drops below the floor, that crown declares the player
-   an outlaw: its ports refuse repair, refuse to sell, and refuse to hire crew, and its
-   warships attack on sight in its half of the Channel. Outlawed by both crowns, the
-   player can only refit at pirate coves, which charge more and stock less, so a hull
-   at half strength becomes expensive to fix and a lost crew becomes hard to replace.
+4. Setting the defection bounty is the design problem. France must offer a bounty
+   larger than the English purse the player gives up, while the English ports that
+   close have to cost enough that doing it every voyage ends the run. The group has to
+   set the purse, the bounty, the standing changes and the two floors so that a loyal
+   privateer, a French-aligned raider and a captain who switches once are all playable
+   to retirement, and a captain who switches every time is not.
 
-5. **Coming back in.** Standing recovers by paying tribute at that crown's port or by
-   completing a contract for it, at a slower rate than it fell, so a betrayal is
-   recoverable and never free.
+5. Standing recovers by paying tribute at that crown's port or by completing a contract
+   for it, at a slower rate than it fell.
 
 New commands this adds: `contracts` to list what the current port is offering, `accept
 <contract>` to take one, `betray <contract>` to sell it to the other crown, and
@@ -136,19 +130,15 @@ Where the estate is bought decides what comes for it:
 | French soil | The French crown, at a rate set by French standing | English raiding parties, and pirates in a bad year |
 | A pirate cove | Nobody, no tax at all | Other pirates, more often than anywhere else, and both navies when a crown decides the cove is worth burning |
 
-Each year the estate draws events against the player's gold and defences:
-
-1. **Tax.** The crown sends a demand. Paying it costs gold and holds standing steady.
-   Refusing keeps the gold, lowers standing with that crown, and raises the chance the
-   sheriff arrives next year with soldiers to seize the land.
-
-2. **Raids.** A raiding party arrives with a strength the player has to meet with walls
-   and retainers. Beating it costs some retainers. Losing it costs a share of the
-   stored gold, and a second loss in consecutive years burns the estate to the ground.
-
-3. **Spending between years.** Gold can go into walls, into hiring retainers, or into
-   bribing the local officer so tax demands come in lower. Gold left in the strongbox
-   is what a successful raid takes, so hoarding is itself a risk.
+Each year the estate draws events against the player's gold and defences. The crown
+sends a tax demand: paying it costs gold and holds standing steady, while refusing
+keeps the gold, lowers standing with that crown, and raises the chance the sheriff
+arrives next year with soldiers to seize the land. A raiding party arrives with a
+strength the player has to meet with walls and retainers; beating it costs some
+retainers, losing it costs a share of the stored gold, and a second loss in consecutive
+years burns the estate to the ground. Between years, gold can go into walls, into
+hiring retainers, or into bribing the local officer so tax demands come in lower. Gold
+left in the strongbox is what a successful raid takes.
 
 The run ends when the player holds the estate through a set number of years, which
 prints the final score, or when the estate is lost. Losing it with the ship already
