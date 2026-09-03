@@ -82,7 +82,7 @@ counts against the group.*
 | # | Stretch goal | Why it is non-essential | Why it is interesting |
 |---|--------------|-------------------------|-----------------------|
 | S1 | Two-crown politics: privateering contracts, standing with England and with France, and outlawry when either standing falls far enough | The voyage loop in section 2 closes without it. Ports can stay neutral shops that sell repairs and crew to anyone, and the player can still sail, fight, plunder and retire | Every port stops being a shop and starts being a position. The player has to price a betrayal against the ports it will close, and we have to tune the French payout so that turning on England is worth taking at least once and ruinous as a habit |
-| S2 | TODO | TODO | TODO |
+| S2 | Buying an estate and holding it against tax collectors and raiders, in place of the ending that just prints a score | The MVP already ends cleanly at `retire`, and the voyage loop never needs a second phase to be playable | Gold stops being a score and becomes something the player has to defend. Where the estate is bought picks which enemy comes for it, so the choice pays off against the standings from S1 and against how much the player is willing to leave in the strongbox |
 | S3 | TODO | TODO | TODO |
 
 ### S1 in detail: the politics system
@@ -129,6 +129,49 @@ What the system adds on top of the MVP:
 New commands this adds: `contracts` to list what the current port is offering, `accept
 <contract>` to take one, `betray <contract>` to sell it to the other crown, and
 `standing` to print where the player sits with each crown.
+
+
+### S2 in detail: buying an estate and holding it
+
+In the MVP, `retire` ends the game. S2 turns that ending into a second phase the player
+has to survive. Once the player's gold passes the price of an estate, buying one sells
+the ship, converts the crew into retainers, and starts a yearly clock instead of a
+port-to-port one.
+
+Where the estate is bought decides what comes for it:
+
+| Location | Who taxes it | Who raids it |
+|----------|--------------|--------------|
+| English soil | The English crown, at a rate set by English standing | French raiding parties, and pirates in a bad year |
+| French soil | The French crown, at a rate set by French standing | English raiding parties, and pirates in a bad year |
+| A pirate cove | Nobody, no tax at all | Other pirates, more often than anywhere else, and both navies when a crown decides the cove is worth burning |
+
+Each year the estate draws events against the player's gold and defences:
+
+1. **Tax.** The crown sends a demand. Paying it costs gold and holds standing steady.
+   Refusing keeps the gold, lowers standing with that crown, and raises the chance the
+   sheriff arrives next year with soldiers to seize the land.
+
+2. **Raids.** A raiding party arrives with a strength the player has to meet with walls
+   and retainers. Beating it costs some retainers. Losing it costs a share of the
+   stored gold, and a second loss in consecutive years burns the estate to the ground.
+
+3. **Spending between years.** Gold can go into walls, into hiring retainers, or into
+   bribing the local officer so tax demands come in lower. Gold left in the strongbox
+   is what a successful raid takes, so hoarding is itself a risk.
+
+The run ends when the player holds the estate through a set number of years, which
+prints the final score, or when the estate is lost. Losing it with the ship already
+sold ends the game as a pauper; the group can decide whether a lost estate instead
+puts the player back to sea with a small boat and nothing else.
+
+Without S1 in place, tax rates are flat numbers and no crown confiscates the land, so
+S2 can be built and graded on its own.
+
+New commands this adds: `estates` to list what is for sale and at what price, `buy
+estate <place>` to retire onto it, `fortify <walls or retainers>` to spend on defence,
+`pay tax` and `refuse tax` when the demand arrives, and `holdings` to print the
+estate's walls, retainers, stored gold and years held.
 
 ---
 
