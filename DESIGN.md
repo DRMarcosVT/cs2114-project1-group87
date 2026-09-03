@@ -120,13 +120,13 @@ has to survive. Once the player's gold passes the price of an estate, buying one
 the ship, converts the crew into retainers, and starts a yearly clock instead of a
 port-to-port one.
 
-Where the estate is bought decides what comes for it:
-
-| Location | Who taxes it | Who raids it |
-|----------|--------------|--------------|
-| English soil | The English crown, at a rate set by English standing | French raiding parties, and pirates in a bad year |
-| French soil | The French crown, at a rate set by French standing | English raiding parties, and pirates in a bad year |
-| A pirate cove | Nobody, no tax at all | Other pirates, more often than anywhere else, and both navies when a crown decides the cove is worth burning |
+Where the estate is bought decides what comes for it. An estate on English soil is
+taxed by the English crown at a rate set by English standing, and French raiding
+parties come for it, with pirates arriving in a bad year. An estate on French soil is
+taxed by the French crown at a rate set by French standing, and the raiders are English
+instead. An estate at a pirate cove pays no tax to anyone, and other pirates raid it
+more often than they raid anywhere else, with both navies turning up when a crown
+decides the cove is worth burning.
 
 Each year the estate draws events against the player's gold and defences. The crown
 sends a tax demand: paying it costs gold and holds standing steady, while refusing
