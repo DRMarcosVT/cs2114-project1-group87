@@ -28,9 +28,8 @@ won it.
 
 > **Assignment prompt.** MVP (Minimum Viable Product) - Considering what core functionality is absolutely necessary to solve the user's primary problem. The smallest version that actually works. Take your description and transform it into a set of features your product should have. Consider what functional requirements (what your program must do) and non-functional requirements (how your program must perform) are a good fit for your project. Ensure your features are specific components or actions (e.g., add card, add deck) rather than very high level descriptions of collections of features (e.g., manages deck). 
 
-The smallest version that works is one voyage loop: read the port, sail somewhere,
-survive what you meet, spend what you took, and end the game by retiring rich or by
-sinking. Everything below is required for that loop to close.
+MVP: a survival adventure game. You try to be the biggest pirate in the Channel
+without being killed by the coast guard or other pirates, or arrested on shore.
 
 ### Functional requirements — what the program must do
 
