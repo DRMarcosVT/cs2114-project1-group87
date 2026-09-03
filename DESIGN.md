@@ -3,10 +3,6 @@
 CS 2114 Project 1 — Group 87
 Working title: a text based pirate adventure game
 
-> Sections below are placeholders. Each one records the assignment's question and
-> waits for the group's answer. Replace every `TODO` before submitting; nothing here
-> is a guess at what the group decided.
-
 ---
 
 ## 1. What are you building?
@@ -182,7 +178,6 @@ what a hostile player types on purpose.*
 
 ## 5. What don't you know how to do yet?
 
-*Honest list of the gaps, plus the group's plan for closing them.*
 
 ### Open unknowns
 
