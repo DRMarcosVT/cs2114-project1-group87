@@ -187,4 +187,4 @@ hours, and which the group researches first.
 | Name | GitHub | Responsibilities |
 |------|--------|------------------|
 | Marcos Salas | DRMarcosVT | TODO |
-| TODO | aidanmc906678698 | TODO |
+| Aidan | aidanmc906678698 | TODO |
