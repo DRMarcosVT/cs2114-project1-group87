@@ -16,7 +16,14 @@ with a specific spin rather than a generic category. The assignment's example: n
 flashcard app", but "a flashcard app that strategically gives you a mix of things you've
 gotten right before and things you tend to get wrong".*
 
-TODO
+You play a pirate captain who gives orders by typing them, and the game answers in
+words. Your ship is the thing you build up and the thing you can lose: it has a hull
+that takes damage, a crew whose numbers rise and fall, armour that wears down, and
+weapons that set which fights you can survive. All four carry forward from one
+encounter to the next, so the ship you limp away in is the ship you start the next
+scene with. Nothing is repaired for free between scenes, so a victory that costs you
+half your crew and cracks your hull can leave you in a worse position than the one you
+were in before you won it.
 
 ---
 
