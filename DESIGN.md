@@ -31,7 +31,7 @@ MVP: a survival adventure game. You try to be the biggest pirate in the channel 
 7. Typing 'buy <item>' where the port stocks it deducts the price, replaces the ship's current weapon or armour, and reports the old rating beside the new one.
 8. Typing 'fight' during an encounter resolves the battle in rounds, where damage dealt comes from the weapon and the surviving crew and damage taken is reduced by armour before it lands on hull and crew, until one side is out of the fight.
 9. Typing 'flee' during an encounter breaks it off, applying parting damage to the hull and giving no plunder.
-10. Winning a fight takes plunder, so the game adds the defeated ship's gold to the player's, names the amount, and returns the player to sailing.
+10. Winning a fight takes plunder, so the game adds the defeated ship's gold to the player's, gives the amount, and returns the player to sailing.
 11. Letting hull or crew reach zero sinks the ship, and the game prints how it was lost and the final gold total before ending.
 12. Typing 'retire' at the home cove while holding at least the target gold wins the run, printing the ending, the gold total and the number of ports visited.
 13. Typing 'help' prints every command with its arguments.
