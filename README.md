@@ -1,3 +1,3 @@
-# cs2114-project1-group87
+# Eustace the Pirate Monk
 
-A text based pirate adventure game
+CS 2114 Project 1, Group 87. A text based pirate adventure game.
