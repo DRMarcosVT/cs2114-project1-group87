@@ -260,7 +260,7 @@ Some general ideas would be Ship (weapons & gold), Map, Encounter, Command, and 
 Another thing, I (Aidan), don't know how to do is Port map and how exactly we can code it.
 One idea is port objects holding references to their neighbors. Another thing is the modes,
 the game has modes (at sea, port, encounter, etc) I'm not sure how we can enforce commands 
-restricted to that mode. Maybe some sort of enum or something else more structured. One more thing, is testing randomness. One of the requirements is that all 3 randomness comes from one seedable generator. We haven't figured out how to pass a Random into every class that needs it, or how to write a JUnit test that forces a specific encounter (e.g. guarantee a fight happens so the fight code gets covered on Web-CAT). This stuff: Math.multiplyExact/addExact ArithmeticException can also cause some trouble.
+restricted to that mode. Maybe some sort of enum or something else more structured. One more thing, is testing randomness. We haven't figured out how to pass a Random into every class that needs it, or how to write a JUnit test that forces a specific encounter (e.g. guarantee a fight happens so the fight code gets covered on Web-CAT). This stuff: Math.multiplyExact/addExact ArithmeticException can also cause some trouble.
 
 
 
