@@ -10,7 +10,7 @@ What are you building? One paragraph a non-CS person could understand. Challenge
 
 You play a pirate captain sailing around the English Channel between England and France. You give
 orders to your men or make decisions by typing them and the game responds and describes the world around you as well as your context (specifically in combat) in words. You sail from port to port, English, French, and pirate coves,
-and you choose where to go next and what to do when you get there. You can also spend time in the ocean or channel but your ship attritions as you do and you may get attacked by other pirates and the coast guard. Your power is measured by the ship and your crew: crew members die or dessert, the ship's armour wears down, and ammunitions runs low. You can raid different kinds of ships to get more or less loot, as well as more or less notoriety (which determiens the difficulty of the game: how big enemy ships are, how common they are, etc.)
+and you choose where to go next and what to do when you get there. You can also spend time in the ocean or channel but your ship attritions as you do and you may get attacked by other pirates and the coast guard. Your power is measured by the ship and your crew: crew members die or dessert, the ship's armour wears down, and ammunitions runs low. You can raid different kinds of ships to get more or less loot, as well as more or less notoriety (which determiens the difficulty of the game: how big hostile ships are, how common they are, etc.)
 
 ---
 
@@ -43,12 +43,8 @@ unknowns are closed.
 
 ### Non-functional requirements - how the program must perform
 
-1. The game runs as a console program on the lab Eclipse setup, reading typed lines and writing text with no window and no library outside the CS 2114 support projects, checked by the grader running the main class from a terminal.
-2. No input ends the program by exception, because every command either takes effect or prints a message and prompts again, checked by a JUnit test that feeds the parser the cases listed in section 4 and asserts the game still accepts input. 
-3. All randomness comes from one generator the tests can seed, checked by a JUnit test asserting that two runs with the same seed and the same commands produce identical output.
-4. The submission passes Web-CAT with full method coverage and no style warnings under 'vtcseclipsestyle.xml', checked by the Web-CAT submission report.
-5. Every response fits one screen, wraps at 80 characters, and names the ship values it changed, checked by reading the transcript of a play session.
-6. Game state lives in objects rather than static fields so a second game can start inside one run, checked by a JUnit test that plays a game to a loss, constructs a new game, and asserts the new ship is at full hull.
+1. The game runs as a console program on the lab Eclipse setup, reading typed lines and writing text with no window and no dependencies.
+2. All randomness comes from one generator the tests can seed.
 
 ## 3. Stretch goals
 
