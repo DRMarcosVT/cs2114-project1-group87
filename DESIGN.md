@@ -256,7 +256,7 @@ changed.
 
 ## 5. What don't you know how to do yet?
 Basically, neither of us know exactly how the class structure will be designed.
-Some general ideas would be Ship (weapons & gold), Map, Encounter, Command, and Game.
+Some general ideas would be Ship, Map, Encounter, Command, and Game.
 Another thing, I (Aidan), don't know how to do is Port map and how exactly we can code it.
 One idea is port objects holding references to their neighbors. Another thing is the modes,
 the game has modes (at sea, port, encounter, etc) I'm not sure how we can enforce commands 
