@@ -57,26 +57,24 @@ are closed.
 
 The Channel is drawn like a metro map laid over the sea between England and France. Each
 stop is a place the ship can be, and one 'sail' command moves the ship to a stop joined
-to the current one by a line. There are four kinds of stop:
+to the current one by a line. There are three kinds of stop:
 
 1. A port, where the ship is moored. It is the only place to repair, hire crew and buy
    cannons, armour and rum, and nothing attacks the ship there. The map has three
    English ports (Southampton, Winchelsea, Dover), three French ports (Barfleur, Dieppe,
    Boulogne) and one pirate cove, Sark, which is the home port.
-2. The coastal waters around each port. Every port has its own, and leaving or entering
-   a port always passes through them. The coast guard patrols these waters most often.
-3. A sea lane, the open water on a direct route between two ports. There are eight: two
+2. A sea lane, the open water on a direct route between two ports. There are eight: two
    along the English coast, two along the French coast, three across the Channel, and
-   one from Barfleur to Sark. Merchant ships use these.
-4. The high seas, three stretches of open Channel (West, Mid and East) away from any
-   route. Each touches the coastal waters of the nearest ports and its neighbouring
-   stretch. Encounters are most likely here.
+   one from Barfleur to Sark. Merchant ships use these, and the coast guard patrols them.
+3. The high seas, three stretches of open Channel (West, Mid and East) away from any
+   route. Each touches the nearest ports and its neighbouring stretch. Pirates hunt here,
+   and encounters are most likely.
 
-Crossing from Dover to Boulogne takes four moves: off Dover, the Dover–Boulogne lane, off
-Boulogne, Boulogne. Every move into a sea stop costs the crew rum or morale and can bring
-an encounter. The high seas shorten some trips: from off Southampton to off Sark is two
-moves across the West Channel against four along the lanes, and those two moves carry the
-highest encounter chance on the map.
+Crossing from Dover to Boulogne takes two moves: the Dover–Boulogne lane, then Boulogne.
+Every move into a sea stop costs the crew rum or morale and can bring an encounter. The
+high seas shorten some trips: Southampton to Sark is two moves across the West Channel
+against four along the lanes, and those two moves carry the highest encounter chance on
+the map.
 
 ## 3. Stretch goals
 

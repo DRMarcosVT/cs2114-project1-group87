@@ -136,7 +136,7 @@ These are our choices for laying the sections out, not course requirements.
 - [ ] Every bad-input case 1-27 from DESIGN.md section 4 has a row naming the class,
       the method and the response.
 - [ ] Overflow handling (case 12, dividing gold by unit price before multiplying) names
-      the `Port` method it lives in.
+      the `PlayerShip` purchase methods it lives in.
 - [ ] `hasNextLine` handling (case 24) names the class that owns the `Scanner`.
 
 ### Tests

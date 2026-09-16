@@ -3,37 +3,30 @@ classDiagram
 
     class Game {
         +int GOLD_TARGET$
-        -Terminal terminal
+        -Scanner in
         -ChannelMap map
         -PlayerShip player
         -Encounter encounter
         -Random random
         -boolean running
-        +Game(Terminal terminal, ChannelMap map, Random random)
+        +Game(Scanner in, ChannelMap map, Random random)
         +main(String[] args)$ void
         +run() void
-        +execute(Command command) String
+        +dispatch(Command command) String
         +mode() GameMode
-        +isRunning() boolean
         +getPlayer() PlayerShip
         +getEncounter() Encounter
     }
 
-    class Terminal {
-        -Scanner in
-        -PrintStream out
-        +Terminal(Scanner in, PrintStream out)
-        +readLine() String
-        +confirm(String question) boolean
-        +println(String text) void
+    class CommandParser {
+        +parse(String line) Command
+        +parseCount(String text)$ int
     }
 
     class Command {
         -Verb verb
         -String argument
         +Command(Verb verb, String argument)
-        +parse(String line)$ Command
-        +parseAmount(String text)$ int
         +getVerb() Verb
         +getArgument() String
         +getWord(int index) String
@@ -54,19 +47,18 @@ classDiagram
         RETIRE
         HELP
         QUIT
+        EMPTY
+        UNKNOWN
         -String usage
         +getUsage() String
     }
 
     class GameMode {
         <<enumeration>>
-        IN_PORT
-        AT_SEA
-        IN_ENCOUNTER
-    }
-
-    class InvalidCommandException {
-        +InvalidCommandException(String message)
+        PORT
+        SEA
+        ENCOUNTER
+        OVER
     }
 
     class ChannelMap {
@@ -76,7 +68,6 @@ classDiagram
         +add(Location stop) void
         +connect(String keyA, String keyB) void
         +find(String name) Location
-        +resolveMove(Location from, String name) Location
         +getHome() Port
     }
 
@@ -100,25 +91,28 @@ classDiagram
         +int HIRE_PRICE$
         +int RUM_PRICE$
         +int UPGRADE_PRICE$
-        -String owner
-        +Port(String key, String name, String owner)
-        +getOwner() String
+        -Nation nation
+        +Port(String key, String name, Nation nation)
+        +getNation() Nation
         +rumPrice() int
-        +sellRepair(PlayerShip ship, int points) int
-        +sellCrew(PlayerShip ship, int men) int
-        +sellRum(PlayerShip ship, int bottles) int
-        +sellUpgrade(PlayerShip ship, String item) int
+        +upgradePrice(int nextLevel) int
         +describe() String
     }
 
     class LocationKind {
         <<enumeration>>
         PORT
-        COASTAL_WATERS
         SEA_LANE
         HIGH_SEAS
         -int encounterPercent
         +getEncounterPercent() int
+    }
+
+    class Nation {
+        <<enumeration>>
+        ENGLAND
+        FRANCE
+        PIRATE
     }
 
     class Ship {
@@ -153,11 +147,14 @@ classDiagram
         -int portsVisited
         +PlayerShip(String name, Port home)
         +moveTo(Location destination) void
-        +getLocation() Location
-        +repair(int points) int
-        +upgradeCannons() int
-        +upgradeArmour() int
+        +repair(int points, int pricePerPoint) int
+        +hire(int men, int pricePerMan) int
+        +buyRum(int bottles, int pricePerBottle) int
+        +upgradeCannons(int price) boolean
+        +upgradeArmour(int price) boolean
+        +payBonus(int gold) boolean
         +addNotoriety(int amount) void
+        +getLocation() Location
         +getNotoriety() int
         +getPortsVisited() int
         +describe() String
@@ -216,19 +213,18 @@ classDiagram
         +describe() String
     }
 
-    Game "1" *-- "1" Terminal : lines in, text out
-    Game ..> Command : parses each line
-    Game ..> InvalidCommandException : catches, prints message
-    Game ..> GameMode : derives each turn
+    Game ..> CommandParser : each line
+    CommandParser ..> Command : builds
+    Command --> Verb
+    Game ..> GameMode : computes each turn
     Game "1" *-- "1" ChannelMap : sail targets
     Game "1" *-- "1" PlayerShip : player
     Game "1" o-- "0..1" Encounter : current fight
-    Command --> Verb
-    ChannelMap "1" *-- "25" Location : stops
-    Location "1" --> "1..5" Location : neighbours
+    ChannelMap "1" *-- "18" Location : stops
+    Location "1" --> "2..4" Location : neighbours
     Location <|-- Port
     Location --> LocationKind
-    Port ..> PlayerShip : sells repair, crew, rum, upgrades
+    Port --> Nation
     Ship <|-- PlayerShip
     Ship <|-- EnemyShip
     Ship "1" *-- "1" Crew
