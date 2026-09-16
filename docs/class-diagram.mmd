@@ -1,0 +1,238 @@
+classDiagram
+    direction TB
+
+    class Game {
+        +int GOLD_TARGET$
+        -Terminal terminal
+        -ChannelMap map
+        -PlayerShip player
+        -Encounter encounter
+        -Random random
+        -boolean running
+        +Game(Terminal terminal, ChannelMap map, Random random)
+        +main(String[] args)$ void
+        +run() void
+        +execute(Command command) String
+        +mode() GameMode
+        +isRunning() boolean
+        +getPlayer() PlayerShip
+        +getEncounter() Encounter
+    }
+
+    class Terminal {
+        -Scanner in
+        -PrintStream out
+        +Terminal(Scanner in, PrintStream out)
+        +readLine() String
+        +confirm(String question) boolean
+        +println(String text) void
+    }
+
+    class Command {
+        -Verb verb
+        -String argument
+        +Command(Verb verb, String argument)
+        +parse(String line)$ Command
+        +parseAmount(String text)$ int
+        +getVerb() Verb
+        +getArgument() String
+        +getWord(int index) String
+        +toString() String
+    }
+
+    class Verb {
+        <<enumeration>>
+        LOOK
+        STATUS
+        SAIL
+        REPAIR
+        HIRE
+        BUY
+        BONUS
+        FIGHT
+        FLEE
+        RETIRE
+        HELP
+        QUIT
+        -String usage
+        +getUsage() String
+    }
+
+    class GameMode {
+        <<enumeration>>
+        IN_PORT
+        AT_SEA
+        IN_ENCOUNTER
+    }
+
+    class InvalidCommandException {
+        +InvalidCommandException(String message)
+    }
+
+    class ChannelMap {
+        -ArrayList~Location~ stops
+        -Port home
+        +standard()$ ChannelMap
+        +add(Location stop) void
+        +connect(String keyA, String keyB) void
+        +find(String name) Location
+        +resolveMove(Location from, String name) Location
+        +getHome() Port
+    }
+
+    class Location {
+        -String key
+        -String name
+        -LocationKind kind
+        -ArrayList~Location~ neighbours
+        +Location(String key, String name, LocationKind kind)
+        +connect(Location other) void
+        +isNextTo(Location other) boolean
+        +getNeighbours() List~Location~
+        +getKey() String
+        +getName() String
+        +getKind() LocationKind
+        +describe() String
+    }
+
+    class Port {
+        +int REPAIR_PRICE$
+        +int HIRE_PRICE$
+        +int RUM_PRICE$
+        +int UPGRADE_PRICE$
+        -String owner
+        +Port(String key, String name, String owner)
+        +getOwner() String
+        +rumPrice() int
+        +sellRepair(PlayerShip ship, int points) int
+        +sellCrew(PlayerShip ship, int men) int
+        +sellRum(PlayerShip ship, int bottles) int
+        +sellUpgrade(PlayerShip ship, String item) int
+        +describe() String
+    }
+
+    class LocationKind {
+        <<enumeration>>
+        PORT
+        COASTAL_WATERS
+        SEA_LANE
+        HIGH_SEAS
+        -int encounterPercent
+        +getEncounterPercent() int
+    }
+
+    class Ship {
+        <<abstract>>
+        -String name
+        -int hull
+        -int maxHull
+        -int cannons
+        -int armour
+        -int gold
+        -int rum
+        -Crew crew
+        +Ship(String name, int maxHull, int cannons, int armour, Crew crew, int gold, int rum)
+        +attackStrength() int
+        +takeDamage(int raw) int
+        +isDefeated() boolean
+        +addGold(int amount) void
+        +spendGold(int amount) void
+        +addRum(int bottles) void
+        +takeRum(int bottles) int
+        +getCrew() Crew
+        #setHull(int hull) void
+        #setCannons(int cannons) void
+        #setArmour(int armour) void
+        +describe()* String
+    }
+
+    class PlayerShip {
+        +int MAX_LEVEL$
+        -Location location
+        -int notoriety
+        -int portsVisited
+        +PlayerShip(String name, Port home)
+        +moveTo(Location destination) void
+        +getLocation() Location
+        +repair(int points) int
+        +upgradeCannons() int
+        +upgradeArmour() int
+        +addNotoriety(int amount) void
+        +getNotoriety() int
+        +getPortsVisited() int
+        +describe() String
+    }
+
+    class EnemyShip {
+        -EnemyType type
+        +EnemyShip(EnemyType type, int notoriety)
+        +getType() EnemyType
+        +describe() String
+    }
+
+    class EnemyType {
+        <<enumeration>>
+        MERCHANT
+        PIRATE
+        COAST_GUARD
+        -int hull
+        -int crew
+        -int cannons
+        -int armour
+        -int gold
+        -int morale
+        -int notorietyGain
+        +getNotorietyGain() int
+    }
+
+    class Crew {
+        +int MAX_COUNT$
+        -int count
+        -int morale
+        -int greed
+        +Crew(int count, int morale)
+        +lose(int men) int
+        +hire(int men) int
+        +moraleFactor() double
+        +drink(int bottlesAvailable) int
+        +onWin(int plunder) void
+        +onFlee() void
+        +receiveBonus(int gold) void
+        +isBroken() boolean
+        +getCount() int
+        +getMorale() int
+        +getGreed() int
+    }
+
+    class Encounter {
+        -PlayerShip player
+        -EnemyShip enemy
+        -Random random
+        +Encounter(PlayerShip player, EnemyShip enemy, Random random)
+        +roll(Location where, PlayerShip player, Random random)$ Encounter
+        +fight() String
+        +flee() String
+        +getEnemy() EnemyShip
+        +describe() String
+    }
+
+    Game "1" *-- "1" Terminal : lines in, text out
+    Game ..> Command : parses each line
+    Game ..> InvalidCommandException : catches, prints message
+    Game ..> GameMode : derives each turn
+    Game "1" *-- "1" ChannelMap : sail targets
+    Game "1" *-- "1" PlayerShip : player
+    Game "1" o-- "0..1" Encounter : current fight
+    Command --> Verb
+    ChannelMap "1" *-- "25" Location : stops
+    Location "1" --> "1..5" Location : neighbours
+    Location <|-- Port
+    Location --> LocationKind
+    Port ..> PlayerShip : sells repair, crew, rum, upgrades
+    Ship <|-- PlayerShip
+    Ship <|-- EnemyShip
+    Ship "1" *-- "1" Crew
+    PlayerShip --> Location : current stop
+    EnemyShip --> EnemyType : base stats
+    Encounter --> PlayerShip : damage, plunder
+    Encounter "1" *-- "1" EnemyShip : opponent

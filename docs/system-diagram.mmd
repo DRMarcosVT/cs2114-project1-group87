@@ -1,0 +1,36 @@
+flowchart LR
+    Terminal["Terminal"]
+    Command["Command"]
+    Invalid["InvalidCommandException"]
+    Game["Game"]
+    ChannelMap["ChannelMap"]
+    Location["Location"]
+    Port["Port"]
+    Encounter["Encounter"]
+    Ship["Ship (abstract)"]
+    PlayerShip["PlayerShip"]
+    EnemyShip["EnemyShip"]
+    Crew["Crew"]
+
+    Terminal -- "typed line" --> Game
+    Game -- "reply text" --> Terminal
+    Game -- "line" --> Command
+    Command -- "Verb + argument" --> Game
+    Invalid -. "refusal message thrown by Command, ChannelMap, Port" .-> Game
+
+    Game -- "typed stop name" --> ChannelMap
+    ChannelMap -- "holds 25" --> Location
+    Port -- "extends" --> Location
+    Game -- "repair / hire / buy amount" --> Port
+    Port -- "hull, crew, rum, upgrades for gold" --> PlayerShip
+
+    Game -- "next Location" --> PlayerShip
+    PlayerShip -- "current stop" --> Location
+    Game -- "fight / flee" --> Encounter
+    Encounter -- "battle report" --> Game
+    Encounter -- "damage, plunder" --> PlayerShip
+    Encounter -- "damage" --> EnemyShip
+    PlayerShip -- "extends" --> Ship
+    EnemyShip -- "extends" --> Ship
+    Ship -- "has one" --> Crew
+    Crew -- "morale scales attack" --> Ship

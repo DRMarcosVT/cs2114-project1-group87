@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 810" width="1100" height="810" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Channel map: 25 stops ChannelMap.standard() builds</title>
+
+  <!-- sea and land -->
+  <rect x="0" y="0" width="1100" height="700" fill="#dbeaf4"/>
+  <path d="M0,0 H1100 V110 Q1000,113 940,104 Q780,119 620,106 Q450,115 260,104 Q120,113 0,108 Z" fill="#efe6d2" stroke="#c9b99a" stroke-width="2"/>
+  <path d="M210,700 V642 Q236,602 282,598 H360 Q420,606 470,601 Q700,594 1100,600 V700 Z" fill="#efe6d2" stroke="#c9b99a" stroke-width="2"/>
+  <ellipse cx="70" cy="628" rx="46" ry="24" fill="#efe6d2" stroke="#c9b99a" stroke-width="2"/>
+  <text x="24" y="36" font-size="15" font-weight="700" letter-spacing="4" fill="#9a8a6a">ENGLAND</text>
+  <text x="810" y="688" font-size="15" font-weight="700" letter-spacing="4" fill="#9a8a6a" text-anchor="middle">FRANCE</text>
+
+  <!-- high-seas links (drawn first so lanes cross over them) -->
+  <g stroke="#13294b" stroke-width="5" stroke-linecap="round" fill="none">
+    <line x1="150" y1="400" x2="260" y2="175"/>
+    <line x1="150" y1="400" x2="70" y2="535"/>
+    <line x1="150" y1="400" x2="320" y2="535"/>
+    <line x1="150" y1="400" x2="470" y2="400"/>
+    <line x1="470" y1="400" x2="620" y2="175"/>
+    <line x1="470" y1="400" x2="640" y2="535"/>
+    <line x1="470" y1="400" x2="800" y2="400"/>
+    <line x1="800" y1="400" x2="940" y2="175"/>
+    <line x1="800" y1="400" x2="980" y2="535"/>
+  </g>
+
+  <!-- sea lanes: sea-coloured casing leaves a gap where a lane crosses a high-seas link -->
+  <g stroke="#dbeaf4" stroke-width="16" stroke-linecap="butt" fill="none">
+    <line x1="260" y1="175" x2="320" y2="535"/>
+    <line x1="620" y1="175" x2="640" y2="535"/>
+    <line x1="940" y1="175" x2="980" y2="535"/>
+  </g>
+  <g stroke-width="7" stroke-linecap="round" fill="none">
+    <polyline points="260,175 620,175 940,175" stroke="#c62f3b"/>
+    <polyline points="320,535 640,535 980,535" stroke="#2a5db0"/>
+    <line x1="70" y1="535" x2="320" y2="535" stroke="#7d4aa3"/>
+    <line x1="260" y1="175" x2="320" y2="535" stroke="#2f8f5b"/>
+    <line x1="620" y1="175" x2="640" y2="535" stroke="#2f8f5b"/>
+    <line x1="940" y1="175" x2="980" y2="535" stroke="#2f8f5b"/>
+  </g>
+
+  <!-- port to its coastal waters -->
+  <g stroke="#222" stroke-width="4">
+    <line x1="260" y1="90" x2="260" y2="175"/>
+    <line x1="620" y1="90" x2="620" y2="175"/>
+    <line x1="940" y1="90" x2="940" y2="175"/>
+    <line x1="320" y1="535" x2="320" y2="615"/>
+    <line x1="640" y1="535" x2="640" y2="615"/>
+    <line x1="980" y1="535" x2="980" y2="615"/>
+    <line x1="70" y1="535" x2="70" y2="620"/>
+  </g>
+
+  <!-- sea-lane stops -->
+  <g stroke-width="3" fill="#fff">
+    <rect x="433" y="168" width="14" height="14" transform="rotate(45 440 175)" stroke="#c62f3b"/>
+    <rect x="773" y="168" width="14" height="14" transform="rotate(45 780 175)" stroke="#c62f3b"/>
+    <rect x="473" y="528" width="14" height="14" transform="rotate(45 480 535)" stroke="#2a5db0"/>
+    <rect x="803" y="528" width="14" height="14" transform="rotate(45 810 535)" stroke="#2a5db0"/>
+    <rect x="188" y="528" width="14" height="14" transform="rotate(45 195 535)" stroke="#7d4aa3"/>
+    <rect x="283" y="348" width="14" height="14" transform="rotate(45 290 355)" stroke="#2f8f5b"/>
+    <rect x="623" y="348" width="14" height="14" transform="rotate(45 630 355)" stroke="#2f8f5b"/>
+    <rect x="953" y="348" width="14" height="14" transform="rotate(45 960 355)" stroke="#2f8f5b"/>
+  </g>
+
+  <!-- coastal-waters stops -->
+  <g fill="#fff" stroke="#111" stroke-width="3">
+    <circle cx="260" cy="175" r="8"/>
+    <circle cx="620" cy="175" r="8"/>
+    <circle cx="940" cy="175" r="8"/>
+    <circle cx="320" cy="535" r="8"/>
+    <circle cx="640" cy="535" r="8"/>
+    <circle cx="980" cy="535" r="8"/>
+    <circle cx="70" cy="535" r="8"/>
+  </g>
+
+  <!-- high-seas stops -->
+  <g fill="#13294b" stroke="#fff" stroke-width="3">
+    <circle cx="150" cy="400" r="17"/>
+    <circle cx="470" cy="400" r="17"/>
+    <circle cx="800" cy="400" r="17"/>
+  </g>
+
+  <!-- ports -->
+  <g fill="#fff" stroke="#111" stroke-width="4">
+    <circle cx="260" cy="90" r="12"/>
+    <circle cx="620" cy="90" r="12"/>
+    <circle cx="940" cy="90" r="12"/>
+    <circle cx="320" cy="615" r="12"/>
+    <circle cx="640" cy="615" r="12"/>
+    <circle cx="980" cy="615" r="12"/>
+    <circle cx="70" cy="620" r="12" fill="#111" stroke="#fff"/>
+  </g>
+
+  <!-- port labels -->
+  <g font-size="16" font-weight="700" fill="#111" text-anchor="middle">
+    <text x="260" y="58">Southampton</text>
+    <text x="620" y="58">Winchelsea</text>
+    <text x="940" y="58">Dover</text>
+    <text x="320" y="655">Barfleur</text>
+    <text x="640" y="655">Dieppe</text>
+    <text x="980" y="655">Boulogne</text>
+    <text x="70" y="675">Sark</text>
+  </g>
+  <g font-size="12" text-anchor="middle">
+    <text x="260" y="74" fill="#c62f3b">English port</text>
+    <text x="620" y="74" fill="#c62f3b">English port</text>
+    <text x="940" y="74" fill="#c62f3b">English port</text>
+    <text x="320" y="671" fill="#2a5db0">French port</text>
+    <text x="640" y="671" fill="#2a5db0">French port</text>
+    <text x="980" y="671" fill="#2a5db0">French port</text>
+    <text x="70" y="691" fill="#111">pirate cove · home</text>
+  </g>
+
+  <!-- coastal-waters labels -->
+  <g font-size="13" fill="#111">
+    <text x="272" y="163">off Southampton</text>
+    <text x="632" y="163">off Winchelsea</text>
+    <text x="952" y="163">off Dover</text>
+    <text x="332" y="559">off Barfleur</text>
+    <text x="652" y="559">off Dieppe</text>
+    <text x="992" y="559">off Boulogne</text>
+    <text x="82" y="559">off Sark</text>
+  </g>
+
+  <!-- sea-lane labels -->
+  <g font-size="12" font-style="italic" fill="#333">
+    <text x="440" y="205" text-anchor="middle">Southampton–Winchelsea</text>
+    <text x="780" y="205" text-anchor="middle">Winchelsea–Dover</text>
+    <text x="480" y="517" text-anchor="middle">Barfleur–Dieppe</text>
+    <text x="810" y="517" text-anchor="middle">Dieppe–Boulogne</text>
+    <text x="195" y="517" text-anchor="middle">Barfleur–Sark</text>
+    <text x="306" y="360">Southampton–Barfleur</text>
+    <text x="646" y="360">Winchelsea–Dieppe</text>
+    <text x="976" y="360">Dover–Boulogne</text>
+  </g>
+
+  <!-- high-seas labels -->
+  <g font-size="14" font-weight="700" fill="#13294b">
+    <text x="124" y="405" text-anchor="end">West Channel</text>
+    <text x="452" y="432" text-anchor="end">Mid Channel</text>
+    <text x="782" y="432" text-anchor="end">East Channel</text>
+  </g>
+
+  <!-- legend -->
+  <rect x="0" y="700" width="1100" height="110" fill="#ffffff"/>
+  <line x1="0" y1="700" x2="1100" y2="700" stroke="#c9b99a" stroke-width="2"/>
+  <text x="20" y="732" font-size="18" font-weight="700" fill="#111">The Channel map</text>
+  <text x="182" y="732" font-size="13" fill="#555">25 stops. Each 'sail' command moves the ship one stop along a line. Stop names are typed with spaces or hyphens.</text>
+
+  <g font-size="13" fill="#111">
+    <circle cx="30" cy="762" r="9" fill="#fff" stroke="#111" stroke-width="3.5"/>
+    <text x="48" y="767">Port: moored, can trade</text>
+    <circle cx="238" cy="762" r="7" fill="#fff" stroke="#111" stroke-width="3"/>
+    <text x="254" y="767">Coastal waters around a port</text>
+    <rect x="463" y="755" width="12" height="12" transform="rotate(45 469 761)" fill="#fff" stroke="#333" stroke-width="3"/>
+    <text x="486" y="767">Sea lane between two ports</text>
+    <circle cx="690" cy="762" r="11" fill="#13294b" stroke="#fff" stroke-width="2"/>
+    <text x="710" y="767">High seas</text>
+    <circle cx="815" cy="762" r="9" fill="#111" stroke="#fff" stroke-width="3"/>
+    <text x="832" y="767">Pirate cove</text>
+
+    <line x1="20" y1="790" x2="52" y2="790" stroke="#c62f3b" stroke-width="7"/>
+    <text x="60" y="795">English coast lane</text>
+    <line x1="210" y1="790" x2="242" y2="790" stroke="#2a5db0" stroke-width="7"/>
+    <text x="250" y="795">French coast lane</text>
+    <line x1="395" y1="790" x2="427" y2="790" stroke="#2f8f5b" stroke-width="7"/>
+    <text x="435" y="795">Cross-Channel lane</text>
+    <line x1="590" y1="790" x2="622" y2="790" stroke="#7d4aa3" stroke-width="7"/>
+    <text x="630" y="795">Pirate run</text>
+    <line x1="735" y1="790" x2="767" y2="790" stroke="#13294b" stroke-width="5"/>
+    <text x="775" y="795">High-seas link</text>
+  </g>
+</svg>

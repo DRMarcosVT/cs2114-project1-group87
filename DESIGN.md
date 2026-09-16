@@ -14,6 +14,8 @@ and you choose where to go next and what to do when you get there. You can also 
 
 ---
 
+state machine
+
 ## 2. What is the MVP?
 
 MVP (Minimum Viable Product) - Considering what core functionality is absolutely necessary to solve the user's primary problem. The smallest version that actually works. Take your description and transform it into a set of features your product should have. Consider what functional requirements (what your program must do) and non-functional requirements (how your program must perform) are a good fit for your project. Ensure your features are specific components or actions (e.g., add card, add deck) rather than very high level descriptions of collections of features (e.g., manages deck). 
@@ -22,29 +24,59 @@ MVP: a survival adventure game. You try to be the biggest pirate in the channel 
 
 ### Functional requirements - what the program must do
 
-1. Running the program starts a voyage: the game prints the opening scene, puts the ship at its home cove, and sets hull, crew, armour, weapon and gold to their starting values.
-2. Typing 'look' reads the current port, so the game prints its name, whether it is English, French or a pirate cove, what can be bought there, and every port reachable from it.
-3. Typing 'status' checks the ship, which prints hull health, crew count, armour rating, current weapons and gold.
-4. Typing 'sail <port>' moves the ship when that port is reachable from the current one, describing the crossing and rolling for one encounter on the way, and when the port is unreachable or misspelled it names the reachable ports and spends no turn.
-5. Typing 'repair <amount>' at a port buys hull back at the port's price per point, stopping at full hull or at the gold the player holds and reporting what was actually bought.
+1. Running the program starts a voyage: the game prints the opening scene, puts the ship at its home cove, and sets hull, crew, cannons, armour, rum and gold to their starting values.
+2. Typing 'look' describes the current stop on the Channel map, so the game prints its name and kind, whether it is English, French or a pirate cove, what can be bought there when it is a port, and every stop one move away.
+3. Typing 'status' checks the ship, which prints hull health, crew count, crew morale and greed, cannon and armour levels, bottles of rum in the hold, gold and notoriety.
+4. Typing 'sail <stop>' moves the ship one stop along the Channel map when that stop is joined to the current one, describing the new stop and, when it is at sea, rolling for one encounter, and when the stop is not joined to the current one or is misspelled it names the neighbouring stops and spends no turn.
+5. Typing 'repair <amount>' at a port buys hull back at the port's price per point, stopping at full hull or at the gold the player holds and reporting how many points were bought.
 6. Typing 'hire <count>' at a port adds that many crew at the port's price each, refusing the portion the player cannot pay for and saying how many came aboard.
-7. Typing 'buy <item>' where the port stocks it deducts the price, replaces the ship's current weapon or armour, and reports the old rating beside the new one.
-8. Typing 'fight' during an encounter resolves the battle in rounds, where damage dealt comes from the weapon and the surviving crew and damage taken is reduced by armour before it lands on hull and crew, until one side is out of the fight.
+7. Typing 'buy cannons' or 'buy armour' at a port raises that level by one, up to the maximum level, charging the price of the next level and reporting the old level beside the new one. Typing 'buy rum <bottles>' adds that many bottles to the hold at the port's price each, stopping at the gold the player holds and reporting how many came aboard.
+8. Typing 'fight' during an encounter resolves the battle in rounds, where damage dealt comes from the cannons and the surviving crew, scaled by that crew's morale, and damage taken is reduced by armour before it lands on hull and crew, until one side is out of the fight.
 9. Typing 'flee' during an encounter breaks it off, applying parting damage to the hull and giving no plunder.
 10. Winning a fight takes plunder, so the game adds the defeated ship's gold to the player's, gives the amount, and returns the player to sailing.
 11. Letting hull or crew reach zero sinks the ship, and the game prints how it was lost and the final gold total before ending.
 12. Typing 'retire' at the home cove while holding at least the target gold wins the run, printing the ending, the gold total and the number of ports visited.
-13. Typing 'help' prints every command with its arguments.
+13. Typing 'help' prints every command with its arguments. 
 14. Typing 'quit' asks for confirmation and exits without saving.
+15. Typing 'bonus <amount>' hands that much gold to the crew, lowering greed by an amount set by the gold each man receives and raising morale.
+16. Every move into a sea stop, the crew drinks one bottle of rum per ten men; when the hold runs short, morale drops instead. Winning a fight raises morale and raises greed in proportion to the plunder; fleeing lowers morale.
+17. When crew morale empties or greed fills, the crew mutinies: the game prints which one broke, the final gold total and the ports visited, and ends the run. An enemy crew whose morale empties surrenders, which wins the fight.
 
-Starting values, prices, the gold target for retirement and the size of the port map
-are numbers the group still has to pick. They are placeholders until section 5's
-unknowns are closed.
+Starting values, prices, encounter chances and the gold target for retirement are
+numbers the group still has to pick. They are placeholders until section 5's unknowns
+are closed.
 
 ### Non-functional requirements - how the program must perform
 
 1. The game runs as a console program on the lab Eclipse setup, reading typed lines and writing text with no window and no dependencies.
 2. All randomness comes from one generator the tests can seed.
+
+### The Channel map
+
+![Channel map](docs/channel-map.png)
+
+The Channel is drawn like a metro map laid over the sea between England and France. Each
+stop is a place the ship can be, and one 'sail' command moves the ship to a stop joined
+to the current one by a line. There are four kinds of stop:
+
+1. A port, where the ship is moored. It is the only place to repair, hire crew and buy
+   cannons, armour and rum, and nothing attacks the ship there. The map has three
+   English ports (Southampton, Winchelsea, Dover), three French ports (Barfleur, Dieppe,
+   Boulogne) and one pirate cove, Sark, which is the home port.
+2. The coastal waters around each port. Every port has its own, and leaving or entering
+   a port always passes through them. The coast guard patrols these waters most often.
+3. A sea lane, the open water on a direct route between two ports. There are eight: two
+   along the English coast, two along the French coast, three across the Channel, and
+   one from Barfleur to Sark. Merchant ships use these.
+4. The high seas, three stretches of open Channel (West, Mid and East) away from any
+   route. Each touches the coastal waters of the nearest ports and its neighbouring
+   stretch. Encounters are most likely here.
+
+Crossing from Dover to Boulogne takes four moves: off Dover, the Dover–Boulogne lane, off
+Boulogne, Boulogne. Every move into a sea stop costs the crew rum or morale and can bring
+an encounter. The high seas shorten some trips: from off Southampton to off Sark is two
+moves across the West Channel against four along the lanes, and those two moves carry the
+highest encounter chance on the map.
 
 ## 3. Stretch goals
 
@@ -78,7 +110,7 @@ What the system adds on top of the MVP:
    crowns, the player can only refit at pirate coves, which charge more for hull repair
    and crew than any crown port and carry a smaller stock of weapons and armour.
 
-4. Challenge: finding the trechery-loyalty equilibrium. Players are encouraged to be just loyal enough and just trecherous enough to maximise their benefit.
+4. Challenge: finding the trechery-loyalty equilibrium. Players are encouraged to be loyal enough to keep each crown's ports open and treacherous enough to collect defection bounties from the other crown.
 
 5. Standing recovers by paying tribute at that crown's port or by completing crown contracts. Randomness and crown standings being inversely correlated means that even a loyal privateer will see their standing drop and be incentivised to betray.
 
@@ -111,7 +143,7 @@ estate's walls, retainers, stored gold and years held.
 
 ### Crew morale and greed in detail
 
-In the MVP the crew is measured by a number that falls in fights and rises when the player hires more sailors. This stretch goal makes the crew another party to be satisfied, failing this results in game over.
+The MVP carries a basic version of this (FR15–17): morale and greed as two numbers, one bottle of rum per ten men per move, and 'bonus'. This stretch goal adds what the basic version leaves out: heavier drinking after big wins and losses, warnings before either bar breaks, a hold that caps how much rum the ship carries, and 'crew' as its own report. The crew becomes another party to be satisfied, and failing this results in game over.
 
 Two bars sit beside hull, armour and gold. Morale is how willing the men are to keep
 sailing under the captain, and it drains as the voyage goes on. Greed is how large a
@@ -191,8 +223,8 @@ changed.
    'sail dover' do the same thing.
 6. Trailing punctuation on a port name ('sail Dover.', 'sail "Dover"') is stripped before
    the lookup, so the quotes do not turn a real port into an unknown one.
-7. A port name that exists on the map but is not reachable from here names the ports that
-   are reachable and spends no turn, which is a different message from a port name that
+7. A stop that exists on the map but is not joined to the current one names the
+   neighbouring stops and spends no turn, which is a different message from a name that
    exists nowhere ('sail Atlantis').
 8. Only the first word of a line is read as a verb, so 'sail help' looks for a port
    called help and fails the port lookup.
@@ -202,7 +234,7 @@ changed.
 9. Spending a negative amount ('repair -50', 'hire -10') is refused, because the calculation would pay the player gold for damaging the ship, an if statement would catch this and print a message the player they need to pay or hire a positive amount.
 10. Zero ('repair 0', 'hire 0') is accepted, changes nothing, and spends no turn.
 11. User input induced type errors: if a user types "hire ten" or "hire 10.1", instead of running the cost calculation, a try-catch block will parse the int (or other appropiate type) and if it throws a number format exception, it will print a message to the user they can only hire whole sailors.
-12. The game allows for the possibility of int overflow, so a command that computes a cost of goods from typed input can produce a negative price and consider the purchase affordable. If the player tries to hire 2147483647 sailors, the count is a valid int, but multiplying it by the price per sailor exceeds Integer.MAX_VALUE and brings it down to a negative number, which might pass a naive affordability comparison and gives the player sailors for free or even increases their wealht after doing so. Each arithmetic step downstream of an int therefore should run inside a try-catch block using Math.multiplyExact and Math.addExact, which throw ArithmeticException when the true result would overflow or underflow. The catch block recomputes the same operation in long, where the true cost fits, and rejects the order with a message pointing to the unaffordability.
+12. The game allows for the possibility of int overflow, so a command that computes a cost of goods from typed input can produce a negative price and consider the purchase affordable. If the player tries to hire 2147483647 sailors, the count is a valid int, but multiplying it by the price per sailor exceeds Integer.MAX_VALUE and brings it down to a negative number, which might pass a naive affordability comparison and gives the player sailors for free or even increases their wealht after doing so. The port therefore divides first: it works out how many units the player's gold covers (gold divided by the unit price), buys the smaller of that and the amount typed, and only then multiplies. The product is never larger than the gold the player holds, so it cannot overflow.
 13. An amount larger than the player can afford buys the portion the gold covers and
     reports what was bought, and an amount larger than the ship can hold stops at full
     hull or at maximum crew.
@@ -211,7 +243,7 @@ changed.
 
 14. 'fight' or 'flee' typed when no encounter is in progress says so and spends no turn.
 15. 'repair', 'hire' or 'buy' typed at sea says the ship must be in port.
-16. 'buy <item>' at a port that does not stock that item says the port does not stock it.
+16. 'buy <item>' naming something no port sells ('buy spyglass') lists what ports sell: cannons, armour and rum.
 17. 'retire' away from the home cove, or at the home cove below the target gold, prints
     how much more gold is needed and continues the run.
 18. Answering the 'quit' confirmation with anything other than the expected yes is
@@ -221,12 +253,12 @@ changed.
 
 19. Repeating 'look' and 'status' any number of times advances no clock and rolls no
     encounter, so a player cannot reroll a bad encounter by inspecting the ship first.
-20. 'sail <current port>' is refused, so a player cannot farm encounters and plunder
-    without ever leaving the port.
+20. 'sail <current stop>' is refused, so a player cannot farm encounters and plunder
+    without ever moving.
 21. Repeated 'flee' applies parting hull damage every time, so a player who flees every
     encounter sinks.
-22. Buying the weapon or armour the ship already carries is refused before the gold is
-    deducted, so the player cannot be charged twice for the same rating.
+22. 'buy cannons' or 'buy armour' when that level is already at the maximum is refused
+    before any gold is deducted, so the player cannot pay for an upgrade that does nothing.
 
 ### Hostile input streams
 
@@ -257,6 +289,13 @@ Another thing, I (Aidan), don't know how to do is Port map and how exactly we ca
 One idea is port objects holding references to their neighbors. Another thing is the modes,
 the game has modes (at sea, port, encounter, etc) I'm not sure how we can enforce commands 
 restricted to that mode. Maybe some sort of enum or something else more structured. One more thing, is testing randomness. We haven't figured out how to pass a Random into every class that needs it, or how to write a JUnit test that forces a specific encounter (e.g. guarantee a fight happens so the fight code gets covered on Web-CAT). This stuff: Math.multiplyExact/addExact ArithmeticException can also cause some trouble.
+
+Closed in SPEC.md §1: each Location holds a list of its neighbours; the game mode is
+computed from where the ship is and whether an encounter is in progress; one seeded Random
+is created in main and passed to Game and Encounter, and a test forces a fight by
+constructing an Encounter directly instead of rolling for one; overflow is avoided by
+dividing gold by the unit price before multiplying, so Math.multiplyExact is not needed.
+Weapons became cannon and armour levels.
 
 
 
