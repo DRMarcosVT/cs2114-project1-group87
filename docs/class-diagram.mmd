@@ -1,7 +1,16 @@
 classDiagram
     direction TB
 
+    class Describable {
+        <<interface>>
+        +describe() String
+    }
+
     class Game {
+        +String PORT$
+        +String SEA$
+        +String ENCOUNTER$
+        +String OVER$
         +int GOLD_TARGET$
         -Scanner in
         -ChannelMap map
@@ -13,56 +22,33 @@ classDiagram
         +main(String[] args)$ void
         +run() void
         +dispatch(Command command) String
-        +mode() GameMode
+        +mode() String
         +getPlayer() PlayerShip
         +getEncounter() Encounter
     }
 
     class CommandParser {
+        -HashMap~String, String~ usages
+        +CommandParser()
         +parse(String line) Command
+        +isVerb(String word) boolean
+        +usageOf(String verb) String
+        +allUsages() String
         +parseCount(String text)$ int
     }
 
     class Command {
-        -Verb verb
+        -String verb
         -String argument
-        +Command(Verb verb, String argument)
-        +getVerb() Verb
+        +Command(String verb, String argument)
+        +getVerb() String
         +getArgument() String
         +getWord(int index) String
         +toString() String
     }
 
-    class Verb {
-        <<enumeration>>
-        LOOK
-        STATUS
-        SAIL
-        REPAIR
-        HIRE
-        BUY
-        BONUS
-        FIGHT
-        FLEE
-        RETIRE
-        HELP
-        QUIT
-        EMPTY
-        UNKNOWN
-        -String usage
-        +getUsage() String
-    }
-
-    class GameMode {
-        <<enumeration>>
-        PORT
-        SEA
-        ENCOUNTER
-        OVER
-    }
-
     class ChannelMap {
-        -ArrayList~Location~ stops
+        -HashMap~String, Location~ stops
         -Port home
         +standard()$ ChannelMap
         +add(Location stop) void
@@ -72,17 +58,22 @@ classDiagram
     }
 
     class Location {
+        +String PORT$
+        +String SEA_LANE$
+        +String HIGH_SEAS$
         -String key
         -String name
-        -LocationKind kind
+        -String kind
+        -int encounterPercent
         -ArrayList~Location~ neighbours
-        +Location(String key, String name, LocationKind kind)
+        +Location(String key, String name, String kind, int encounterPercent)
         +connect(Location other) void
         +isNextTo(Location other) boolean
         +getNeighbours() List~Location~
         +getKey() String
         +getName() String
-        +getKind() LocationKind
+        +getKind() String
+        +getEncounterPercent() int
         +describe() String
     }
 
@@ -91,28 +82,12 @@ classDiagram
         +int HIRE_PRICE$
         +int RUM_PRICE$
         +int UPGRADE_PRICE$
-        -Nation nation
-        +Port(String key, String name, Nation nation)
-        +getNation() Nation
+        -String nation
+        +Port(String key, String name, String nation)
+        +getNation() String
         +rumPrice() int
         +upgradePrice(int nextLevel) int
         +describe() String
-    }
-
-    class LocationKind {
-        <<enumeration>>
-        PORT
-        SEA_LANE
-        HIGH_SEAS
-        -int encounterPercent
-        +getEncounterPercent() int
-    }
-
-    class Nation {
-        <<enumeration>>
-        ENGLAND
-        FRANCE
-        PIRATE
     }
 
     class Ship {
@@ -168,18 +143,20 @@ classDiagram
     }
 
     class EnemyType {
-        <<enumeration>>
-        MERCHANT
-        PIRATE
-        COAST_GUARD
+        +EnemyType MERCHANT$
+        +EnemyType PIRATE$
+        +EnemyType COAST_GUARD$
+        -String name
         -int hull
         -int crew
         -int cannons
         -int armour
         -int gold
         -int morale
-        -int notorietyGain
-        +getNotorietyGain() int
+        -int gain
+        +EnemyType(String name, int hull, int crew, int cannons, int armour, int gold, int morale, int gain)
+        +getName() String
+        +getGain() int
     }
 
     class Crew {
@@ -202,6 +179,8 @@ classDiagram
     }
 
     class Encounter {
+        +int FLEE_DAMAGE$
+        +int ROLL_RANGE$
         -PlayerShip player
         -EnemyShip enemy
         -Random random
@@ -213,18 +192,17 @@ classDiagram
         +describe() String
     }
 
-    Game ..> CommandParser : each line
+    Describable <|.. Location
+    Describable <|.. Ship
+    Describable <|.. Encounter
+    Game "1" *-- "1" CommandParser : each line
     CommandParser ..> Command : builds
-    Command --> Verb
-    Game ..> GameMode : computes each turn
     Game "1" *-- "1" ChannelMap : sail targets
     Game "1" *-- "1" PlayerShip : player
     Game "1" o-- "0..1" Encounter : current fight
-    ChannelMap "1" *-- "18" Location : stops
+    ChannelMap "1" *-- "18" Location : stops by key
     Location "1" --> "2..4" Location : neighbours
     Location <|-- Port
-    Location --> LocationKind
-    Port --> Nation
     Ship <|-- PlayerShip
     Ship <|-- EnemyShip
     Ship "1" *-- "1" Crew
