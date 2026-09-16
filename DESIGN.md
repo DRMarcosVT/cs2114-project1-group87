@@ -39,7 +39,7 @@ MVP: a survival adventure game. You try to be the biggest pirate in the channel 
 13. Typing 'help' prints every command with its arguments. 
 14. Typing 'quit' asks for confirmation and exits without saving.
 15. Typing 'bonus <amount>' hands that much gold to the crew, lowering greed by an amount set by the gold each man receives and raising morale.
-16. Every move into a sea stop, the crew drinks one bottle of rum per ten men; when the hold runs short, morale drops instead. Winning a fight raises morale and raises greed in proportion to the plunder; fleeing lowers morale.
+16. Every move into a sea stop, the crew drinks one bottle of rum per ten men; every bottle it wanted and the hold could not give costs morale. Winning a fight raises morale and raises greed in proportion to the plunder; fleeing lowers morale.
 17. When crew morale empties or greed fills, the crew mutinies: the game prints which one broke, the final gold total and the ports visited, and ends the run. An enemy crew whose morale empties surrenders, which wins the fight.
 
 Starting values, prices, encounter chances and the gold target for retirement are
