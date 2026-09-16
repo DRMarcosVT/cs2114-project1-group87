@@ -40,10 +40,7 @@ and the verbs `look`, `status`, `sail`, `repair`, `hire`, `buy`, `bonus`, `fight
 `flee`, `retire`, `help`, `quit`.
 
 No class both parses text and changes ship values, and no class both holds game state and
-prints it. Course work used: an abstract class with two subclasses, a second inheritance
-pair (`Port` extends `Location`), an interface, two `HashMap`s, an `ArrayList` per stop
-holding a graph as adjacency lists, one injected `Random` so JUnit replays a run, and one
-`student.TestCase` class per production class.
+prints it.
 
 Why this split: both sides fight by the same rules, so `Encounter` calls
 `attackStrength()` and `takeDamage()` on a `Ship` without knowing which side it holds.
