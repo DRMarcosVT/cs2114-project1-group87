@@ -84,8 +84,11 @@ those bounds, so no caller can drive it outside.
 - `Location`: final `String key`, `name` and `kind`; final `int encounterPercent`, 0 for a
   port, 35 for a sea lane and 60 for the high seas *default*; `ArrayList<Location>
   neighbours`, 2 to 4 entries, where if A lists B then B lists A, and a stop never lists
-  itself or a duplicate. `getNeighbours()` returns an unmodifiable view. The list keeps
-  the order `look` prints, and as an adjacency list it holds only the 25 links.
+  itself or a duplicate. `getNeighbours()` hands back the list wrapped in
+  `Collections.unmodifiableList`, so `Game` can read and loop over the neighbours while
+  `add` or `remove` on what it got throws `UnsupportedOperationException`; links are made
+  only by `connect`. The list keeps the order `look` prints, and as an adjacency list it
+  holds only the 25 links.
 - `Port` adds final `String nation` and the *default* prices `REPAIR_PRICE = 2`,
   `HIRE_PRICE = 15`, `RUM_PRICE = 4` and `UPGRADE_PRICE = 100`, all gold per unit, where
   reaching level n costs `UPGRADE_PRICE × n`.
