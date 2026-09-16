@@ -66,7 +66,9 @@ object that owns that verb, and prints what comes back.
 
 ## 3. Data & state
 
-Every field is private, final where said, and the ranges hold after every public method.
+Every field is private, and final where said below. Where a field lists bounds, such as
+hull from 0 to `maxHull` or morale from 0 to 100, the methods that change it clamp to
+those bounds, so no caller can drive it outside.
 
 - `Game`: `Scanner in`; final `ChannelMap map`; final `PlayerShip player`; `Encounter
   encounter`, null unless a fight is on; final `Random random`, the only one in the
