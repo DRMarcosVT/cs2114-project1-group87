@@ -2,31 +2,24 @@
 
 CS 2114 Project 1, Deliverable 2 — Group 87 (Marcos Salas, Aidan McIlvenni)
 
-Java 8, default package, nothing beyond `java.util` and `student.jar`. Numbers marked
-*default* live in named constants; Marcos tunes them in week 2, and section 6's expected
-values are recomputed when they change. Attached: `docs/class-diagram.png` (full UML) and
-`docs/channel-map.png` (the map).
-
 ## 1. Class design
 
-Twelve classes and one interface, each with one job:
-
-1. `Game`: runs the read–dispatch–print loop, computes the current mode, and is the only
-   class that prints. Holds `main`.
+1. `Game`: runs the read–dispatch–print loop, decides which commands are allowed, and is the only
+   class that prints the game (descriptions, actions, etc.). Holds `main` (neccesary to run a java program).
 2. `CommandParser`: turns one raw line into a `Command`, holds the table of verbs and
    their usage lines, and owns every typing-slip rule (DESIGN.md §4 cases 1–6, 8–11, 25,
    27).
 3. `Command`: an immutable value, a verb word and its argument string.
-4. `ChannelMap`: builds the fixed 18-stop map and finds a stop from the name typed.
+4. `ChannelMap`: builds the fixed 18-stop map and calculates a stop from the name typed.
 5. `Location`: one stop, with its key, name, kind, encounter chance and the stops one
    move away.
 6. `Port`: a `Location` where the ship moors, with its nation and prices.
 7. `Ship` (abstract): what both sides share, hull, cannons, armour, gold, rum and a
    `Crew`, plus the rules for dealing and taking damage.
 8. `PlayerShip`: where the player is, notoriety, ports visited, and every purchase.
-9. `EnemyShip`: a ship the player meets, built from an `EnemyType` and the player's
+9. `EnemyShip`: a ship the player encounters, built from an `EnemyType` and the player's
    notoriety.
-10. `EnemyType`: the base numbers for one kind of enemy, with three shared instances,
+10. `EnemyType`: the base stats for one kind of enemy, with three shared instances,
     `MERCHANT`, `PIRATE` and `COAST_GUARD`, as `static final` constants.
 11. `Crew`: head count, morale and greed, and the rules that move them.
 12. `Encounter`: one meeting with an enemy, from the roll that creates it through the
@@ -34,34 +27,32 @@ Twelve classes and one interface, each with one job:
 13. `Describable` (interface): `String describe()`, implemented by `Location`, `Ship` and
     `Encounter`, so `Game` prints any of them the same way.
 
-Fixed vocabularies are `String` constants: modes `Game.PORT`, `SEA`, `ENCOUNTER`, `OVER`;
-kinds `Location.PORT`, `SEA_LANE`, `HIGH_SEAS`; nations "English", "French", "Pirate";
-and the verbs `look`, `status`, `sail`, `repair`, `hire`, `buy`, `bonus`, `fight`,
-`flee`, `retire`, `help`, `quit`.
+Fixed values are `String` constants: kinds `Location.PORT`, `SEA_LANE`, `HIGH_SEAS`; nations `Port.ENGLISH`, `FRENCH`,
+`PIRATE`. The twelve verbs `look`, `status`, `sail`, `repair`, `hire`, `buy`, `bonus`,
+`fight`, `flee`, `retire`, `help` and `quit` are the keys of `CommandParser.usages`.
 
-No class both parses text and changes ship values, and no class both holds game state and
-prints it.
-
-Why this split: both sides fight by the same rules, so `Encounter` calls
-`attackStrength()` and `takeDamage()` on a `Ship` without knowing which side it holds.
-`Crew` is separate because morale scales attack for both sides, and a crew that mutinies
-ends the run for the player or hands the player the win when it is the enemy's. Cannons and armour are levels 1 to 5, so
-`buy` takes three fixed words and no port runs out of stock; every port charges the same
-prices, with Sark halving rum. The mode is never stored: `mode()` returns `OVER` after the
-run ends, `ENCOUNTER` while `encounter != null`, `PORT` at a port, and `SEA` otherwise.
+Both sides fight by the same rules, so `Encounter` calls
+`attackStrength()` and `takeDamage()` on any `Ship`. `Crew` is separate because morale
+scales attack on both sides and a mutiny ends the fight for either. Cannons and armour are
+levels up to 5 on one price list, so no port tracks stock; Sark sells rum at half price.
+Whether a command is allowed depends on two facts `dispatch` checks before running it: a
+fight is on while `encounter != null`, and the player is in port when their stop's kind is
+`Location.PORT`. Section 5 lists which verbs need which.
 
 The map: seven ports (three English, three French, and Sark, the pirate home), eight sea
-lanes each joining two ports, and three high-seas stretches. One `sail` moves one stop, so
-Dover to Boulogne is `sail dover boulogne` then `sail boulogne`; `find` hyphenates the
-words typed and, failing that, tries the first word alone.
+lanes each joining two ports, and three high-seas stretches. One `sail` moves one stop.
+The player names the stop to move to or the port they are heading for, so Dover to
+Boulogne is `sail boulogne` into the Dover–Boulogne lane, then `sail boulogne` again into
+port; a high-seas stretch is only entered by its own name. `find` hyphenates the words
+typed and, failing that, tries the first word alone.
 
 ## 2. System diagram
 
 ![System diagram](docs/system-diagram.png)
 
 Each arrow points the way the labelled thing travels. One turn: `Game` reads a line,
-`CommandParser` returns a `Command`, `Game` checks the verb against `mode()`, calls the
-object that owns that verb, and prints what comes back.
+`CommandParser` returns a `Command`, and `Game` checks the verb is allowed where the
+player is, runs it and prints the result.
 
 ## 3. Data & state
 
@@ -149,10 +140,12 @@ that into the section 5 message. IAE means it throws `IllegalArgumentException`.
 
 `Game`: `Game(Scanner in, ChannelMap map, Random random)`; `static void main(String[]
 args)` builds a game on `System.in`, `ChannelMap.standard()` and `new Random()` and runs
-it; `void run()` prints the opening scene and loops read, parse, dispatch, print until
-`mode()` is `OVER`; `String dispatch(Command c)` applies one command in the current
-mode and returns the text to print; `String mode()`; `PlayerShip getPlayer()`; `Encounter
-getEncounter()`.
+it; `void run()` prints the opening scene and loops read, parse, dispatch, print while
+`running` is true; `String dispatch(Command c)` applies one command and returns the text
+to print, and when the command sinks the ship, mutinies the crew, retires the player or
+confirms `quit`, it sets `running` to false and ends its text with how the run ended, the
+final gold and the ports visited; `boolean isRunning()`; `PlayerShip getPlayer()`;
+`Encounter getEncounter()`.
 
 `CommandParser`: `CommandParser()` fills the verb table; `Command parse(String line)`
 normalises the line and returns a `Command` holding the first word and the rest, or `""`
@@ -172,7 +165,9 @@ null; `Port getHome()`.
 
 `Location` implements `Describable`: `Location(String key, String name, String kind, int
 encounterPercent)`; `void connect(Location other)` adds each to the other once, IAE on
-itself; `boolean isNextTo(Location other)`; `List<Location> getNeighbours()`; getters;
+itself; `boolean isNextTo(Location other)`; `Location stepToward(Location target)` gives
+the target when it is a neighbour, else the neighbouring sea lane that touches it, else
+null, and null when the target is this stop; `List<Location> getNeighbours()`; getters;
 `String describe()` gives name, kind and neighbours. `Port`: `Port(String key, String
 name, String nation)` passes kind `PORT` and chance 0 upward; `String getNation()`; `int
 rumPrice()`, halved at Sark; `int upgradePrice(int nextLevel)`; `describe()` adds the
@@ -213,8 +208,9 @@ narration; `String flee()` applies `FLEE_DAMAGE` and `onFlee()`; `EnemyShip getE
 ## 5. Where validation lives
 
 Numbers are DESIGN.md §4 cases; every response leaves all fields unchanged unless the line
-says otherwise. `dispatch` checks the mode first: `fight` and `flee` need `ENCOUNTER`;
-`repair`, `hire`, `buy` and `bonus` need `PORT`; `sail` is refused in `ENCOUNTER`.
+says otherwise. `dispatch` checks where the player is first: `fight` and `flee` need
+`encounter != null`, `sail` is refused while it is, and `repair`, `hire`, `buy` and `bonus`
+need the player's stop to be a port.
 
 1. Blank line: `parse` gives verb `""` and `dispatch` returns `""`.
 2. Unknown verb: `isVerb` is false, so `dispatch` prints "I don't understand 'sial'. Type
@@ -224,8 +220,8 @@ says otherwise. `dispatch` checks the mode first: `fight` and `flee` need `ENCOU
    `sail dover now please` echoes "sail dover" and proceeds.
 5, 6, 25. Case, spacing, quotes, punctuation, invisible characters: `parse` strips,
    lower-cases, splits on `\s+`, trims `"'.,!?` from each word's ends.
-7. A real stop that is not adjacent: `find` succeeds, `isNextTo` is false, so `dispatch`
-   lists the neighbours.
+7. A real stop that is not adjacent and has no sea lane leading to it: `find` succeeds,
+   `stepToward` gives null, so `dispatch` lists the neighbours.
 8. `sail help`: the verb is the first word only, `find("help")` gives null, and the reply
    is "no such place".
 9, 11. A negative amount, "ten" or "10.1": `parseCount` throws `NumberFormatException` and
@@ -235,7 +231,7 @@ says otherwise. `dispatch` checks the mode first: `fight` and `flee` need `ENCOU
     buys what 200 gold covers.
 13. More than the player can afford or hold: purchases cap by gold, `maxHull` and
     `MAX_COUNT` and report the units bought, the one case that changes state.
-14, 15. A verb in the wrong mode: the `dispatch` mode check prints "nothing to fight" or
+14, 15. A verb in the wrong place: the `dispatch` check prints "nothing to fight" or
     "you must be in port".
 16. An unknown item: `dispatch` sees a word outside cannons, armour and rum and lists
     those three.
@@ -268,13 +264,14 @@ bracketed numbers are DESIGN.md §4 cases, all 27 of which appear.
 
 `Game`:
 
-- `Game(...)` and `run`: a fresh game reports mode `PORT` at Sark, and the script `look`,
-  `status`, `quit`, `yes` prints "Sark" and "Hull 100/100" and ends at `OVER`. A null map
+- `Game(...)` and `run`: a fresh game is running at Sark with no encounter, and the script
+  `look`, `status`, `quit`, `yes` prints "Sark" and "Hull 100/100" and leaves `isRunning()`
+  false. A null map
   throws IAE; a blank line, `sial`, then end of input gives the unknown-command text and
   "input ended" with no exception [1, 2, 24].
-- `dispatch`, normal: `sail barfleur sark` reaches the lane with rum 28; `hire 5` gives
+- `dispatch`, normal: `sail barfleur` reaches the Barfleur–Sark lane with rum 28; `hire 5` gives
   crew 25 and gold 125; with `FixedRandom(0)`, `fight` at the lane ends with gold 350 and
-  no encounter; `retire` on 1000 gold ends at `OVER`; `look`, `status` and `help` print the
+  no encounter; `retire` on 1000 gold leaves `isRunning()` false; `look`, `status` and `help` print the
   stop name, "Morale 70" and every usage line. Bad: bare `sail` gives the usage line [3];
   `sail dover` names Barfleur–Sark and West Channel [7]; `sail sark` says already there
   [20]; `hire 2147483647` buys 13 men for 195 gold [12, 13]; `hire` at sea demands a port
@@ -300,10 +297,12 @@ bracketed numbers are DESIGN.md §4 cases, all 27 of which appear.
   `dover boulogne` finds the lane and `dover now please` finds Dover [4]. A duplicate key
   and `connect("dover", "atlantis")` throw IAE; "atlantis", "help" and "dövér" give null
   [8, 26].
-- `Location(...)`, `connect`, `isNextTo`, `getNeighbours` and `describe`: a lane built with
-  chance 35 reports it; after `a.connect(b)`, `a.isNextTo(b)` is true; Sark lists
-  Barfleur–Sark then West Channel and names both in its description. `a.connect(a)` throws
-  IAE, a pair connected twice lists each once, and `add` on the returned list throws
+- `Location(...)`, `connect`, `isNextTo`, `stepToward`, `getNeighbours` and `describe`: a
+  lane built with chance 35 reports it; after `a.connect(b)`, `a.isNextTo(b)` is true;
+  from Dover, `stepToward` gives the Dover–Boulogne lane for both Boulogne and the lane
+  itself; Sark lists Barfleur–Sark then West Channel and names both in its description.
+  `a.connect(a)` throws IAE, a pair connected twice lists each once, from Sark
+  `stepToward` gives null for Dover and for Sark, and `add` on the returned list throws
   `UnsupportedOperationException`.
 - `Port(...)`, `getNation`, `rumPrice`, `upgradePrice` and `describe`: Dover reports
   "English", chance 0, rum 4 and `upgradePrice(2)` of 200, and its description holds the
@@ -393,12 +392,12 @@ Each item gives the change, the reason, and where it came from.
 6. Overflow (case 12) handled by dividing before multiplying, refusals as return values
    with `dispatch` writing every message, and a `parse` that never throws, so one place
    makes all player-facing text. Aidan's draft; the division from GenAI review.
-7. The mode computed by `Game.mode()` with `OVER` as one value, closing the §5 unknown
-   about restricting commands by mode. Aidan's mode idea plus DESIGN.md's "state
-   machine" note.
+7. Commands restricted by two checks in `dispatch`, a fight on and the player in port,
+   closing the §5 unknown about restricting commands by mode. Aidan's mode idea plus
+   DESIGN.md's "state machine" note; Marcos replaced a `mode()` method with the two checks.
 8. One `Random` injected through `Game`, with `Encounter` fully constructible, closing the
    §5 unknown about forcing a fight in JUnit. GenAI review of §5 in both drafts.
-9. No enums: verbs, modes, kinds and nations are `String` constants with a `HashMap` verb
+9. No enums: kinds and nations are `String` constants, verbs are keys in a `HashMap` verb
    table, and `EnemyType` is a class with three `static final` instances, because the
    course has covered `HashMap`, interfaces and generics but not enums. Marcos, after
    GenAI review proposed enums.

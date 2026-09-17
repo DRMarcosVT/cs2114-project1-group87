@@ -7,10 +7,6 @@ classDiagram
     }
 
     class Game {
-        +String PORT$
-        +String SEA$
-        +String ENCOUNTER$
-        +String OVER$
         +int GOLD_TARGET$
         -Scanner in
         -ChannelMap map
@@ -22,7 +18,7 @@ classDiagram
         +main(String[] args)$ void
         +run() void
         +dispatch(Command command) String
-        +mode() String
+        +isRunning() boolean
         +getPlayer() PlayerShip
         +getEncounter() Encounter
     }
@@ -69,6 +65,7 @@ classDiagram
         +Location(String key, String name, String kind, int encounterPercent)
         +connect(Location other) void
         +isNextTo(Location other) boolean
+        +stepToward(Location target) Location
         +getNeighbours() List~Location~
         +getKey() String
         +getName() String
@@ -78,6 +75,9 @@ classDiagram
     }
 
     class Port {
+        +String ENGLISH$
+        +String FRENCH$
+        +String PIRATE$
         +int REPAIR_PRICE$
         +int HIRE_PRICE$
         +int RUM_PRICE$
@@ -156,6 +156,12 @@ classDiagram
         -int gain
         +EnemyType(String name, int hull, int crew, int cannons, int armour, int gold, int morale, int gain)
         +getName() String
+        +getHull() int
+        +getCrew() int
+        +getCannons() int
+        +getArmour() int
+        +getGold() int
+        +getMorale() int
         +getGain() int
     }
 
