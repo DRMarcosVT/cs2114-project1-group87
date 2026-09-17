@@ -5,7 +5,7 @@ CS 2114 Project 1, Deliverable 2 — Group 87 (Marcos Salas, Aidan McIlvenni)
 ## 1. Class design
 
 1. `Game`: runs the read–dispatch–print loop, decides which commands are allowed, and is the only
-   class that prints the game (descriptions, actions, etc.). Holds `main` (neccesary to run a java program).
+   class that prints the game (descriptions, actions, etc.). Holds `main` (necessary to run a Java program).
 2. `CommandParser`: splits one raw line into a `Command` exactly as typed, holds the table
    of verbs and their templates, and turns typed amounts into numbers.
 3. `Command`: an immutable value, a verb word and its argument string.
@@ -36,7 +36,7 @@ scales attack on both sides and a mutiny ends the fight for either. Cannons and 
 levels up to 5 on one price list, so no port tracks stock; Sark sells rum at half price.
 Whether a command is allowed depends on two facts `dispatch` checks before running it: a
 fight is on while `encounter != null`, and the player is in port when their stop's kind is
-`Location.PORT`. Section 5 lists which verbs need which.
+`Location.PORT`.
 
 The map: seven ports (three English, three French, and Sark, the pirate home), eight sea
 lanes each joining two ports, and three high-seas stretches. `look` describes the current
@@ -59,7 +59,7 @@ Where a field lists bounds, such as
 hull from 0 to `maxHull` or morale from 0 to 100, the methods that change it clamp to
 those bounds, so no caller can drive it outside.
 
-- `Game`: `Scanner in`; final `ChannelMap map` and `PlayerShip player`; `Encounter
+- `Game`: `Scanner in`; final `CommandParser parser`, `ChannelMap map` and `PlayerShip player`; `Encounter
   encounter`, null unless a fight is on; final `Random random`, the only one in the
   program; `boolean running`; `static final int GOLD_TARGET = 1000` *default*.
 - `CommandParser`: final `HashMap<String, String> templates`, which maps each verb to its
@@ -86,8 +86,8 @@ those bounds, so no caller can drive it outside.
   costing `UPGRADE_PRICE × n`.
 - `Ship`: final `String name`; `int hull`, 0 to `maxHull`; final `int maxHull`; `int
   cannons`, 1 to 5; `int armour`, 0 to 5; `int gold` and `int rum`, never negative; final
-  `Crew crew`. Subclasses change hull, cannons and armour only through  setters,
-  which are limited to the bounds above, so a `PlayerShip` repair or upgrade can never push hull
+  `Crew crew`. Subclasses change hull, cannons and armour only through setters,
+  which are limited to those bounds, so a `PlayerShip` repair or upgrade can never push hull
   past `maxHull` or a level past 5.
 - `PlayerShip` adds `Location location`, never null; `int notoriety`; `int portsVisited`;
   `static final int MAX_LEVEL = 5`. It starts *default* at Sark with hull 100, crew 20 at
@@ -143,7 +143,7 @@ How the numbers move:
 ## 4. Method signatures
 
 "Refuses" means the method returns 0 or false and changes nothing, and `dispatch` turns
-that into the section 5 message. IAE means it throws `IllegalArgumentException`.
+that into the message the player sees. IAE means it throws `IllegalArgumentException`.
 
 `Game`: `Game(Scanner in, ChannelMap map, Random random)`; `static void main(String[]
 args)` builds a game on `System.in`, `ChannelMap.standard()` and `new Random()` and runs
@@ -189,14 +189,15 @@ getCrew()`; a getter per field; `abstract String describe()`.
 `PlayerShip`: `PlayerShip(String name, Port home)`; `void moveTo(Location d)`, IAE unless
 d is a neighbour, counting a port arrival; `int repair(int points, int pricePerPoint)`,
 `int hire(int men, int pricePerMan)` and `int buyRum(int bottles, int pricePerBottle)`
-each buy by the rule in section 3 and return the units bought; `boolean
+each buy the smallest of the amount asked for, what the gold covers and the room left
+before the cap, and return the units bought; `boolean
 upgradeCannons(int price)` and `boolean upgradeArmour(int price)` refuse at `MAX_LEVEL` or
 without the gold; `boolean payBonus(int gold)` refuses beyond what is held, else hands the
 gold to the crew; `void addNotoriety(int)`; getters; `describe()` is the `status` report.
 
 `EnemyShip`: `EnemyShip(EnemyType type, int notoriety)`, IAE on null or a negative;
-`EnemyType getType()`; `describe()` is what the lookout sees. `EnemyType`: a constructor
-taking the eight values in section 3 and a getter per field; the three constants are its
+`EnemyType getType()`; `describe()` is what the lookout sees. `EnemyType`: a private constructor
+taking one value per field, and a getter per field; the three constants are its
 only instances.
 
 `Crew`: `Crew(int count, int morale)` caps both; `int lose(int men)` and `int hire(int
@@ -228,36 +229,36 @@ also need the player's stop to be a port.
 1. Blank line: `parse` gives verb `""` and `dispatch` returns `""`.
 2. With an Unknown verb (ex: 'sial') `isVerb` is false, so `dispatch` prints "I don't understand 'sial'. Type
    help."
-3. Missing argument: `dispatch` sees an empty argument and prints that verb's template (ex: sail <stop>).
+3. Missing argument: `dispatch` sees an empty argument and prints that verb's template (ex: `sail <stop>`).
 4. Extra words: `find("dover now please")` gives null and `parseCount("5 men")` throws, so
-   `sail dover now please` gets "no such place" and `hire 5 men` replies 'you can only hire in integers'.
-6. Case, spacing, quotes, punctuation, invisible characters: `parse` keeps the text
-   as typed, so `SAIL dover` fails `isVerb` and gets the case 2 reply, `  sail dover` gives
-   verb `""` and the case 1 reply, and `sail Dover.` gets "no such place".
-7. A real stop that is not adjacent: `find` succeeds, `isNextTo` is false, so `dispatch`
+   `sail dover now please` gets "no such place" and `hire 5 men` gets "type a whole number of 0 or more".
+5. Case, spacing, quotes, punctuation, invisible characters: `parse` keeps the text
+   as typed, so `SAIL dover` fails `isVerb` and gets "I don't understand", `  sail dover` gives
+   verb `""` and is treated as a blank line, and `sail Dover.` gets "no such place".
+6. A real stop that is not adjacent: `find` succeeds, `isNextTo` is false, so `dispatch`
    prints the current stop's `neighbourList()`.
-8. `sail help`: the verb is the first word only, `find("help")` gives null, and the reply
+7. `sail help`: the verb is the first word only, `find("help")` gives null, and the reply
    is "no such place".
-9, 11. A negative amount, "ten" or hiring "10.1": `parseCount` throws `NumberFormatException` and
-   `dispatch` asks for a whole number of 0 or more.
-10. Zero: `parseCount` gives 0, the purchase returns 0, the reply is "bought 0".
-12. Overflow: `PlayerShip` divides gold by price before multiplying, so `hire 2147483647`
+8. A negative amount, "ten" or hiring "10.1": `parseCount` throws `NumberFormatException` and
+   `dispatch` prints "type a whole number of 0 or more".
+9. Zero: `parseCount` gives 0, the purchase returns 0, the reply is "bought 0".
+10. Overflow: `PlayerShip` divides gold by price before multiplying, so `hire 2147483647`
     by a fresh player, who starts with 200 gold, buys 200 ÷ 15 = 13 men for 195 gold.
-14, 15. A verb in the wrong state: the `dispatch` check can print "nothing to fight" or
+11. A verb in the wrong state: the `dispatch` check can print "nothing to fight" or
     "you must be in port".
-16. An unknown item: `dispatch` sees a word it doesn't know and prints what words it does know.
-17. `retire` away from home or short of gold: `dispatch` checks the stop against home and
+12. An unknown item: `dispatch` sees a word it doesn't know and prints what words it does know.
+13. `retire` away from home or short of gold: `dispatch` checks the stop against home and
     the gold against `GOLD_TARGET`, then prints the gold still needed.
-19, 20. Spamming `look` or `status`, and `sail <current stop>`: those branches never call
+14. Spamming `look` or `status`, and `sail <current stop>`: those branches never call
     `roll` or `drink`, and a target equal to the current stop gets "you are already there".
-22. An upgrade at the maximum: the upgrade methods check the level before the gold, so the
+15. An upgrade at the maximum: the upgrade methods check the level before the gold, so the
     gold is untouched.
-23.  A 100,000-character line, and injection: `isVerb` looks the first word up in the
+16. A 100,000-character line, and injection: `isVerb` looks the first word up in the
     fixed verb table, and `find` and `buy` compare against fixed keys and three item words,
     so typed text is not misinterpreted.
-24. Input ends: `run` checks `hasNextLine()` before every read, prints "input ended" and
+17. Input ends: `run` checks `hasNextLine()` before every read, prints "input ended" and
     sets `running` to false.
-26. Accents and emoji: `find` gives null and no item word matches, prints that it doesn't understand that word.
+18. Accents and emoji: `find` gives null and no item word matches, prints that it doesn't understand that word.
 
 ## 6. Test plan
 
@@ -298,7 +299,7 @@ also need the player's stop to be a port.
 - `Location.neighbourList`: Sark gives "barfleur sark, west channel".
 - `Location.describe`: Sark's text contains its neighbour list.
 - `Port.rumPrice`: 4 at Dover, 2 at Sark.
-- `Port.upgradePrice`: `upgradePrice(2)` gives 200, what the port charges to upgrade canons and armour to level 2. The rule is: level * UPGRADE_PRICE
+- `Port.upgradePrice`: `upgradePrice(2)` gives 200, what the port charges to upgrade cannons and armour to level 2. The rule is: level * UPGRADE_PRICE
 - `Port.describe`: Dover's text contains its prices.
 
 `Ship`, `PlayerShip` and `EnemyShip`:
@@ -347,13 +348,15 @@ Aidan owns `CommandParser`, `Command`, `Ship`, `PlayerShip`, `EnemyShip`, `Enemy
 `Crew` and `Encounter`; Marcos owns `Game`, `ChannelMap`, `Location`, `Port` and
 `Describable`, sets the *default* numbers, and reworks the classes
 toward Aidan's suggestion that combat feel "gambly". On day one we write every class with
-its section 4 signatures and stub bodies, so the project compiles and each of us edits
+its method signatures and stub bodies, so the project compiles and each of us edits
 only our own files. Marcos merges each class into `main` with its test class at the
 Tuesday 7 pm meeting, the map, `look`, `status`, `sail`, `repair`, `hire`, `buy`, `help`
 and `quit` in week 1, then fights, the crew rules, `bonus`, `retire`, mutiny and sinking in
 week 2. 
 
 ## 8. Revised scope
+
+The below revisions were a product of group discussion.
 
 1. Crew morale, greed, and rum went from being a stretch goal to an integral part of the deliverable.
 2. An abstract `Ship` shared by both sides, with enemies scaled by `EnemyType` and

@@ -9,6 +9,7 @@ classDiagram
     class Game {
         +int GOLD_TARGET$
         -Scanner in
+        -CommandParser parser
         -ChannelMap map
         -PlayerShip player
         -Encounter encounter
@@ -57,11 +58,11 @@ classDiagram
         +String PORT$
         +String SEA_LANE$
         +String HIGH_SEAS$
+        +int MAX_NEIGHBOURS$
         -String key
         -String name
         -String kind
         -int encounterPercent
-        +int MAX_NEIGHBOURS$
         -Location[] neighbours
         -int neighbourCount
         +Location(String key, String name, String kind, int encounterPercent)
@@ -109,6 +110,13 @@ classDiagram
         +spendGold(int amount) void
         +addRum(int bottles) void
         +takeRum(int bottles) int
+        +getName() String
+        +getHull() int
+        +getMaxHull() int
+        +getCannons() int
+        +getArmour() int
+        +getGold() int
+        +getRum() int
         +getCrew() Crew
         #setHull(int hull) void
         #setCannons(int cannons) void
@@ -155,7 +163,7 @@ classDiagram
         -int gold
         -int morale
         -int gain
-        +EnemyType(String name, int hull, int crew, int cannons, int armour, int gold, int morale, int gain)
+        -EnemyType(String name, int hull, int crew, int cannons, int armour, int gold, int morale, int gain)
         +getName() String
         +getHull() int
         +getCrew() int
@@ -168,6 +176,7 @@ classDiagram
 
     class Crew {
         +int MAX_COUNT$
+        +int MORALE_PER_DRY_BOTTLE$
         -int count
         -int morale
         -int greed
