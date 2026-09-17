@@ -71,9 +71,10 @@ those bounds, so no caller can drive it outside.
 - `ChannelMap`: final `HashMap<String, Location> stops`, the 18 stops keyed by the stop's
   name in lower case with a space between words, such as `dover boulogne`; `Port home`,
   Sark, where the player starts and retires. `ChannelMap.standard()` builds the game's
-  map: it creates the 18 stops, puts them in `stops`, links each pair of neighbours and
-  sets `home`, and nothing changes the map after it returns. `sail` looks the typed key
-  up in `stops`.
+  map: it puts the 18 stops into `stops`, keyed by the text the player types, with no
+  array of stops; it then calls `connect` once per link, and `connect` puts each of the
+  two stops into the other's `neighbours` array. It sets `home`, and nothing changes the
+  map after it returns. `sail` looks the typed key up in `stops`.
 - `Location`: final `String key`, `name` and `kind`; final `int encounterPercent`, 0 for a
   port, 35 for a sea lane and 60 for the high seas *default*; final `Location[]
   neighbours` of `MAX_NEIGHBOURS = 4` slots and `int neighbourCount`, 2 to 4 once the map
@@ -164,9 +165,10 @@ for anything else.
 getVerb()`; `String getArgument()`; `String getWord(int i)` gives the i-th argument word
 or `""`; `String toString()` gives "sail dover".
 
-`ChannelMap`: `static ChannelMap standard()` builds the 18 stops and 25 links; `void
-add(Location stop)`, IAE on a duplicate key; `void connect(String keyA, String keyB)`
-links both ways, IAE on an unknown key; `Location find(String name)` gives the stop or
+`ChannelMap`: `static ChannelMap standard()` adds the 18 stops and calls `connect` for
+each of the 25 links; `void add(Location stop)` puts a stop into `stops`, IAE on a
+duplicate key; `void connect(String keyA, String keyB)` looks both keys up in `stops` and
+calls `Location.connect`, IAE on an unknown key; `Location find(String name)` gives the stop or
 null; `Port getHome()`.
 
 `Location` implements `Describable`: `Location(String key, String name, String kind, int
@@ -204,201 +206,156 @@ drink(int bottlesAvailable)` returns bottles drunk and charges morale for the ru
 onWin(int plunder)`; `void onFlee()`; `void receiveBonus(int gold)`; `boolean mutinied()`;
 getters.
 
-`Encounter` implements `Describable`: `Encounter(PlayerShip player, EnemyShip enemy,
-Random random)`; `static Encounter roll(Location where, PlayerShip player, Random random)`
-gives a new encounter or null; `String fight()` resolves the whole battle and returns the
-narration; `String flee()` applies `FLEE_DAMAGE` and `onFlee()`; `EnemyShip getEnemy()`;
-`String describe()`.
+`Encounter` implements `Describable`. Every random decision in a meeting is a draw from the
+`Random` passed in, the one `main` creates, so a test that passes a `FixedRandom` fixes
+each outcome. `Encounter(PlayerShip player, EnemyShip enemy, Random random)` keeps
+`random` for the damage rolls; `static Encounter roll(Location where, PlayerShip player,
+Random random)` draws whether an encounter happens and which `EnemyType` appears, builds
+`new EnemyShip(type, player.getNotoriety())` and returns a new encounter, or null when
+none happens; `String fight()` resolves the whole battle, adding a `random` draw to every
+shot, and returns the narration; `String flee()` calls
+`player.takeDamage(FLEE_DAMAGE)`, then `crew.onFlee()`, which takes 15 morale, and returns
+the text to print; `EnemyShip getEnemy()` returns the ship being fought, so `Game` and the
+tests can read its type, hull and crew; `String describe()` returns what `look` prints
+during the meeting which is the enemy ship's own `describe()`.
 
 ## 5. Where validation lives
 
-Numbers are DESIGN.md §4 cases; every response leaves all fields unchanged unless the line
-says otherwise. `dispatch` checks where the player is first: `fight` and `flee` need
+ `dispatch` checks where the player is first: `fight` and `flee` need
 `encounter != null`, `sail` is refused while it is, and `repair`, `hire`, `buy` and `bonus`
-need the player's stop to be a port.
+also need the player's stop to be a port.
 
 1. Blank line: `parse` gives verb `""` and `dispatch` returns `""`.
-2. Unknown verb: `isVerb` is false, so `dispatch` prints "I don't understand 'sial'. Type
+2. With an Unknown verb (ex: 'sial') `isVerb` is false, so `dispatch` prints "I don't understand 'sial'. Type
    help."
-3. Missing argument: `dispatch` sees an empty argument and prints that verb's template.
+3. Missing argument: `dispatch` sees an empty argument and prints that verb's template (ex: sail <stop>).
 4. Extra words: `find("dover now please")` gives null and `parseCount("5 men")` throws, so
-   `sail dover now please` gets "no such place" and `hire 5 men` gets the case 9 reply.
-5, 6, 25. Case, spacing, quotes, punctuation, invisible characters: `parse` keeps the text
+   `sail dover now please` gets "no such place" and `hire 5 men` replies 'you can only hire in integers'.
+6. Case, spacing, quotes, punctuation, invisible characters: `parse` keeps the text
    as typed, so `SAIL dover` fails `isVerb` and gets the case 2 reply, `  sail dover` gives
    verb `""` and the case 1 reply, and `sail Dover.` gets "no such place".
 7. A real stop that is not adjacent: `find` succeeds, `isNextTo` is false, so `dispatch`
    prints the current stop's `neighbourList()`.
 8. `sail help`: the verb is the first word only, `find("help")` gives null, and the reply
    is "no such place".
-9, 11. A negative amount, "ten" or "10.1": `parseCount` throws `NumberFormatException` and
+9, 11. A negative amount, "ten" or hiring "10.1": `parseCount` throws `NumberFormatException` and
    `dispatch` asks for a whole number of 0 or more.
 10. Zero: `parseCount` gives 0, the purchase returns 0, the reply is "bought 0".
 12. Overflow: `PlayerShip` divides gold by price before multiplying, so `hire 2147483647`
-    buys what 200 gold covers.
-13. More than the player can afford or hold: purchases cap by gold, `maxHull` and
-    `MAX_COUNT` and report the units bought, the one case that changes state.
-14, 15. A verb in the wrong place: the `dispatch` check prints "nothing to fight" or
+    by a fresh player, who starts with 200 gold, buys 200 ÷ 15 = 13 men for 195 gold.
+14, 15. A verb in the wrong state: the `dispatch` check can print "nothing to fight" or
     "you must be in port".
-16. An unknown item: `dispatch` sees a word outside cannons, armour and rum and lists
-    those three.
+16. An unknown item: `dispatch` sees a word it doesn't know and prints what words it does know.
 17. `retire` away from home or short of gold: `dispatch` checks the stop against home and
     the gold against `GOLD_TARGET`, then prints the gold still needed.
-18. The quit confirmation: `dispatch` reads one more line and ends the run only on "y" or
-    "yes".
 19, 20. Spamming `look` or `status`, and `sail <current stop>`: those branches never call
     `roll` or `drink`, and a target equal to the current stop gets "you are already there".
-21. Repeated `flee`: every `flee` applies `FLEE_DAMAGE`, so the hull drains until
-    `isDefeated` ends the run as a sinking.
 22. An upgrade at the maximum: the upgrade methods check the level before the gold, so the
     gold is untouched.
-23, 27. A 100,000-character line, and injection: `isVerb` looks the first word up in the
+23.  A 100,000-character line, and injection: `isVerb` looks the first word up in the
     fixed verb table, and `find` and `buy` compare against fixed keys and three item words,
-    so typed text is only ever data.
+    so typed text is not misinterpreted.
 24. Input ends: `run` checks `hasNextLine()` before every read, prints "input ended" and
     sets `running` to false.
-26. Accents and emoji: `find` gives null and no item word matches, giving the case 8 or
-    case 16 message.
+26. Accents and emoji: `find` gives null and no item word matches, prints that it doesn't understand that word.
 
 ## 6. Test plan
 
 `Game`:
 
-- `Game(...)` and `run`: a fresh game is running at Sark with no encounter, and the script
-  `look`, `status`, `quit`, `yes` prints "Sark" and "Hull 100/100" and leaves `isRunning()`
-  false. A null map
-  throws IAE; a blank line, `sial`, then end of input gives the unknown-command text and
-  "input ended" with no exception [1, 2, 24].
+- `Game(...)` and `run`: a new game starts at Sark with no encounter and `isRunning()` true.
+  Given a `Scanner` holding the lines `look`, `status`, `quit` and `yes`, `run` prints
+  "Sark" and "Hull 100/100", then ends the game, so `isRunning()` is false. Bad: a null map
+  throws IAE, and given a blank line, then `sial`, then no more lines, `run` prints the
+  unknown-command reply and "input ended" without throwing.
 - `dispatch`, normal: `sail barfleur sark` reaches the lane with rum 28; `hire 5` gives
   crew 25 and gold 125; with `FixedRandom(0)`, a `Random` that always rolls 0, `fight` at the lane ends with gold 350 and
-  no encounter; `retire` on 1000 gold leaves `isRunning()` false; `look`, `status` and `help` print the
-  stop name, "Morale 70" and every template. Bad: bare `sail` gives the template [3];
-  `sail dover` names barfleur sark and west channel [7]; `sail sark` says already there
-  [20]; `hire 2147483647` buys 13 men for 195 gold [12, 13]; `hire` at sea demands a port
-  [15]; `buy spyglass` lists the three items [16]; `buy cannons` at level 5 keeps gold 200
-  [22]; `fight` in port says nothing to fight [14]; `flee` after `setHull(5)` sinks the
-  ship [21]; `retire` on 400 gold gets "600 more needed" [17]; `yse` keeps the run alive
-  [18]; three `look`s at sea leave the encounter null [19]; `sail dover now please` says
-  no such place [4].
+  no encounter; `retire` on 1000 gold ends the game; `look` prints the stop name, `status` "Morale 70",
+  and `help` every template.
 
 `CommandParser` and `Command`:
 
-- `parse`, `isVerb`, `templateOf`, `allTemplates` and `parseCount`: `sail dover boulogne` gives
-  "sail" and "dover boulogne"; `templateOf("sail")` gives `sail <stop>` and `allTemplates()`
-  holds all twelve; "25" gives 25 and "0" gives 0 [10]. `SAIL "Dover".` gives "SAIL" and
-  `"Dover".` unchanged [5, 25], a blank line and `  sail dover` give verb `""` [1, 6]; `sial` and `System.exit(0)` fail `isVerb` [2, 27]; "-50", "ten", "10.1" and
-  "99999999999" throw `NumberFormatException` [9, 11].
-- `Command(...)`, `getWord` and `toString`: from `("buy", "rum 20")`, `getWord(1)` gives
-  "20" and `toString` gives "buy rum 20"; a null verb throws IAE, `getWord(5)` gives `""`.
+- `parse`, `isVerb`, `templateOf`, `allTemplates` and `parseCount`: parsing
+  `sail dover boulogne` gives verb "sail" and argument "dover boulogne";
+  `templateOf("sail")` gives `sail <stop>`; `allTemplates()` contains all twelve templates;
+  `parseCount("25")` gives 25 and `parseCount("0")` gives 0. Bad: parsing `SAIL "Dover".`
+  gives verb "SAIL" and argument `"Dover".` unchanged; a blank line and `  sail dover` both
+  give verb `""`; `isVerb` is false for `sial`; `parseCount` throws
+  `NumberFormatException` for "-50", "ten", "10.1" and "99999999999".
 
 `ChannelMap`, `Location` and `Port`:
 
-- `standard`, `add`, `connect` and `find`: 18 stops, home `sark`, every link both ways;
-  `dover boulogne` finds the lane, and `dover now please` and `dover-boulogne` give null [4]. A duplicate key
-  and `connect("dover", "atlantis")` throw IAE; "atlantis", "help" and "dövér" give null
-  [8, 26].
-- `Location(...)`, `connect`, `isNextTo`, `neighbourList` and `describe`: a lane built with
-  chance 35 reports it; after `a.connect(b)`, `a.isNextTo(b)` is true; Sark's
-  `neighbourList()` gives "barfleur sark, west channel" and its description holds it.
-  `a.connect(a)` and a fifth link throw IAE, and a pair connected twice lists each once.
-- `Port(...)`, `getNation`, `rumPrice`, `upgradePrice` and `describe`: Dover reports
-  "English", chance 0, rum 4 and `upgradePrice(2)` of 200, and its description holds the
-  prices; Sark reports rum 2.
+- `ChannelMap.standard()`: a map of 18 stops with home `sark`, every link recorded on both
+  stops.
+- `ChannelMap.add`: a duplicate key throws IAE.
+- `ChannelMap.connect`: `connect("dover", "atlantis")` throws IAE.
+- `ChannelMap.find`: `dover boulogne` gives the lane; `dover now please`, `dover-boulogne`,
+  `atlantis`, `help` and `dövér` give null.
+- `Location(...)`: a lane built with chance 35 reports 35.
+- `Location.connect`: afterwards each stop lists the other; connecting a pair twice lists
+  each once; `a.connect(a)` and a fifth link throw IAE.
+- `Location.isNextTo`: true for a connected stop, false for any other.
+- `Location.neighbourList`: Sark gives "barfleur sark, west channel".
+- `Location.describe`: Sark's text contains its neighbour list.
+- `Port.rumPrice`: 4 at Dover, 2 at Sark.
+- `Port.upgradePrice`: `upgradePrice(2)` gives 200, what the port charges to upgrade canons and armour to level 2. The rule is: level * UPGRADE_PRICE
+- `Port.describe`: Dover's text contains its prices.
 
 `Ship`, `PlayerShip` and `EnemyShip`:
 
-- `Ship(...)`, `attackStrength` and `isDefeated`: a test subclass with maxHull 40 starts at
-  hull 40, and a fresh player attacks for 12 undefeated. maxHull 0 and a null crew throw
-  IAE, a crew at morale 0 attacks for 7, and `setHull(0)` reports defeated.
-- `takeDamage`, `addGold`, `spendGold`, `addRum` and `takeRum`: a fresh player taking 12
-  loses 10 hull, leaving hull 90, crew 18 and morale 60; 50 gold added or spent gives 250
-  or 150; `addRum(10)` gives 40; `takeRum(5)` gives 5. Negatives throw IAE,
-  `takeDamage(500)` returns 100 leaving hull 0, `spendGold(500)` throws IAE with gold
-  still 200, and `takeRum(50)` gives 30 and empties the hold.
-- `PlayerShip(...)`, `moveTo`, `addNotoriety` and `describe`: a new ship sits at Sark with
-  notoriety 0; sailing to the lane and back counts 1 port visited; `addNotoriety(2)` gives
-  2; `describe` holds every field. A null home, a move from Sark to Dover and a negative
-  notoriety throw IAE.
-- `repair`, `hire`, `buyRum`, `upgradeCannons`, `upgradeArmour` and `payBonus`: from
-  `setHull(80)`, `repair(10, 2)` returns 10 leaving gold 180; `hire(5, 15)` returns 5;
-  `buyRum(20, 2)` returns 20; an upgrade returns true at level 2 leaving gold 0;
-  `payBonus(100)` after `onWin(600)` gives greed 25 and morale 82. `repair(50, 2)` at hull
-  80 returns 20 [13], `hire(30, 15)` returns 13 leaving gold 5 [12], `buyRum(20, 4)` with 3
-  gold returns 0, an upgrade at level 5 or on 50 gold returns false [22], and
+- `Ship(...)`: a test subclass with maxHull 40 starts at hull 40; maxHull 0 or a null crew
+  throws IAE.
+- `Ship.attackStrength`: 12 for a fresh player, 7 with the crew at morale 0.
+- `Ship.isDefeated`: false for a fresh player, true after `setHull(0)`.
+- `Ship.takeDamage`: 12 against a fresh player returns 10, leaving hull 90, crew 18 and
+  morale 60; 500 returns 100, leaving hull 0; a negative throws IAE.
+- `Ship.addGold` and `spendGold`: 50 gives 250 or 150; `spendGold(500)` throws IAE with gold
+  still 200; a negative throws IAE.
+- `Ship.addRum` and `takeRum`: `addRum(10)` gives 40; `takeRum(5)` returns 5;
+  `takeRum(50)` returns 30 and empties the hold; a negative throws IAE.
+- `PlayerShip(...)`: starts at Sark with notoriety 0; a null home throws IAE.
+- `PlayerShip.moveTo`: sailing to the lane and back counts 1 port visited; Sark to Dover
+  throws IAE.
+- `PlayerShip.addNotoriety`: 2 gives 2; a negative throws IAE.
+- `PlayerShip.describe`: the text holds every field.
+- `PlayerShip.upgradeCannons` and `upgradeArmour`: `upgradeCannons(200)` at level 1 returns
+  true, leaving level 2 and gold 0; at level 5 or with 50 gold, either returns false.
+- `PlayerShip.payBonus`: `payBonus(100)` after `onWin(600)` gives greed 25 and morale 82;
   `payBonus(500)` returns false.
-- `EnemyShip(...)`, `describe` and the `EnemyType` getters: `(MERCHANT, 0)` gives hull 40,
-  crew 8, gold 150 and morale 30, and `MERCHANT.getGain()` gives 1. `(PIRATE, -1)` and
-  `(null, 0)` throw IAE, and `COAST_GUARD.getGain()` gives 3.
+- `EnemyType` getters: `MERCHANT.getGain()` gives 1 and `COAST_GUARD.getGain()` gives 3.
 
 `Crew` and `Encounter`:
 
-- `Crew(...)`, `lose`, `hire`, `moraleFactor` and `mutinied`: `(20, 70)` gives factor 0.85
-  and has not mutinied; `lose(2)` returns 2 leaving count 18 and morale 60; `hire(5)`
-  returns 5. `(50, 70)` caps at 40, `lose(25)` returns 20 leaving morale 0 and a mutiny,
-  `hire(30)` returns 20 [13], and negatives throw IAE.
-- `drink`, `onWin`, `onFlee` and `receiveBonus`: with 30 bottles the crew of 20 drinks 2
-  holding morale 70; `onWin(150)` gives morale 80 and greed 7; `onFlee` gives 55; a 100
-  gold bonus after `onWin(600)` gives greed 25 and morale 82. `drink(1)` drinks 1 and
-  drops morale to 65 for a rum deficit of 1, `drink(0)` drops it to 60, `onWin(5000)`
-  caps greed at 100, and negatives throw IAE.
-- `Encounter(...)`, `roll`, `describe`, `fight` and `flee`: a sea lane with
-  `FixedRandom(0)` gives a merchant encounter described as a merchant; fighting it takes
-  the surrender in round 3, ending at hull 97, gold 350, rum 38, morale 80 and greed 7;
-  fleeing gives hull 92, crew 19 and morale 50. A null enemy throws IAE; a port, or the
-  high seas with `FixedRandom(99)`, rolls null; after `setHull(5)` the same fight against `(PIRATE, 0)`
-  loses in round 1 with gold still 200, and fleeing empties the hull [21].
+- `Crew.drink`: a crew of 20 at morale 70 drinks 2 of 30 bottles and keeps morale 70; with
+  1 bottle it drinks 1 and drops to 65; with 0 it drops to 60; a negative throws IAE.
+- `Crew.onWin`: `onWin(150)` gives morale 80 and greed 7; `onWin(5000)` caps greed at 100.
+- `Crew.onFlee`: morale 70 drops to 55.
+- `Crew.receiveBonus`: 100 gold after `onWin(600)` gives greed 25 and morale 82.
+- `Encounter(...)`: a null enemy throws IAE.
+- `Encounter.roll`: a sea lane with `FixedRandom(0)` gives a merchant encounter; a port, or
+  the high seas with `FixedRandom(99)`, gives null.
+- `Encounter.describe`: the merchant encounter's text names a merchant.
+- `Encounter.fight`: against that merchant, the enemy surrenders in round 3, leaving hull 97,
+  gold 350, rum 38, morale 80 and greed 7; after `setHull(5)`, a fight against
+  `(PIRATE, 0)` is lost in round 1 with gold still 200.
+- `Encounter.flee`: a fresh player is left with hull 92, crew 19 and morale 50; after
+  `setHull(5)`, the hull is emptied.
 
-## 7. Division of work
+## 7. Provisional Division of work
 
 Aidan owns `CommandParser`, `Command`, `Ship`, `PlayerShip`, `EnemyShip`, `EnemyType`,
-`Crew` and `Encounter`, with cases 1–6, 8–13, 18 and 21–27, and the Web-CAT submission.
-Marcos owns `Game`, `ChannelMap`, `Location`, `Port` and `Describable`, with the map, all
-*default* numbers, cases 7, 14–17, 19 and 20, and the play-through transcript for the
-oral defence.
-
-Day one, together: every class written with its section 4 signatures and stub bodies, so
-the project compiles and each of us edits only our own files. Week 1 milestone, at the
-Tuesday 7 pm meeting: start at Sark and run `look`, `status`, `sail` round all 18 stops,
-`repair`, `hire`, `buy`, `help` and `quit`. Week 2 adds fights, the crew rules, `bonus`,
-`retire`, mutiny and sinking, and we both play to set the numbers. Marcos owns `Game`, the
-only class calling both sides' code, so nobody edits the same file; each class lands on
-`main` with its test class, and the merged build must pass Web-CAT with no style warnings.
-
-If time runs short we cut, each cut leaving every other class unchanged: greed and `bonus`
-first; then rum, with a fixed morale drop per sea move; then the three high-seas stops.
+`Crew` and `Encounter`; Marcos owns `Game`, `ChannelMap`, `Location`, `Port` and
+`Describable`, sets the *default* numbers, and reworks the classes
+toward Aidan's suggestion that combat feel "gambly". On day one we write every class with
+its section 4 signatures and stub bodies, so the project compiles and each of us edits
+only our own files. Marcos merges each class into `main` with its test class at the
+Tuesday 7 pm meeting, the map, `look`, `status`, `sail`, `repair`, `hire`, `buy`, `help`
+and `quit` in week 1, then fights, the crew rules, `bonus`, `retire`, mutiny and sinking in
+week 2. 
 
 ## 8. Revised scope
 
-Each item gives the change, the reason, and where it came from.
-
-1. An 18-stop metro map of ports, sea lanes and high seas, each kind with its own
-   encounter chance, `sail` moving one stop: the route chosen changes the risk and needs
-   no route-finding. Marcos; group discussion dropped a 25-stop draft's coastal waters so
-   a crossing takes two moves.
-2. A `HashMap` from key to stop with an array of up to four neighbours per stop, closing
-   the §5 unknown about coding the map. Aidan's §5 idea and `HashMap` choice; Marcos
-   replaced an `ArrayList` with the array, which no method hands out.
-3. Crew morale, greed and rum moved from stretch goal 3 into the MVP in basic form
-   (DESIGN.md FR15–17) with `bonus` added, so morale drives combat for both sides and
-   fights gain a second ending. Marcos; the basic and full split from GenAI review.
-4. An abstract `Ship` shared by both sides, with enemies scaled by `EnemyType` and
-   notoriety: one fight routine, and the difficulty scaling promised in DESIGN.md §1
-   returns. Marcos asked for a shared base; the GenAI draft chose inheritance.
-5. Cannon and armour levels on one price list in place of weapon items with per-port
-   stock, removing an `Item` class and seven stock lists. GenAI review, after Marcos set
-   a two-week budget.
-6. Overflow (case 12) handled by dividing before multiplying, refusals as return values
-   with `dispatch` writing every message, and a `parse` that never throws, so one place
-   makes all player-facing text. Aidan's draft; the division from GenAI review.
-7. Commands restricted by two checks in `dispatch`, a fight on and the player in port,
-   closing the §5 unknown about restricting commands by mode. Aidan's mode idea plus
-   DESIGN.md's "state machine" note; Marcos replaced a `mode()` method with the two checks.
-8. One `Random` injected through `Game`, with `Encounter` fully constructible, closing the
-   §5 unknown about forcing a fight in JUnit. GenAI review of §5 in both drafts.
-9. No enums: kinds and nations are `String` constants, verbs are keys in a `HashMap` verb
-   table, and `EnemyType` is a class with three `static final` instances, because the
-   course has covered `HashMap`, interfaces and generics but not enums. Marcos, after
-   GenAI review proposed enums.
-10. No input clean-up: `parse` and `find` take text exactly as typed, since `help` shows
-    every template and `look` every stop key, so DESIGN.md §4 cases 4–6 and 25 get the
-    blank-line, unknown-command or "no such place" reply in place of being corrected.
-    Marcos, to simplify parsing.
+1. Crew morale, greed, and rum went from being a stretch goal to an integral part of the deliverable.
+2. An abstract `Ship` shared by both sides, with enemies scaled by `EnemyType` and
+   notoriety. This makes the player's ship and the enemy ships birds of a feather instead of different classes with different rules, making combat simpler to code.
+3. Buying more than you can afford now empties your treasury instead of throwing or stopping you. Command strings are also not normalised, the player knows what they can and cannot type, if they don't do so, they can't play, this removes the hurdle of string normalisation.
