@@ -288,7 +288,7 @@ One idea is port objects holding references to their neighbors. Another thing is
 the game has modes (at sea, port, encounter, etc) I'm not sure how we can enforce commands 
 restricted to that mode. Maybe some sort of enum or something else more structured. One more thing, is testing randomness. We haven't figured out how to pass a Random into every class that needs it, or how to write a JUnit test that forces a specific encounter (e.g. guarantee a fight happens so the fight code gets covered on Web-CAT). This stuff: Math.multiplyExact/addExact ArithmeticException can also cause some trouble.
 
-Closed in SPEC.md §1: each Location holds a list of its neighbours; commands are
+Closed in SPEC.md §1: each Location holds an array of up to four neighbours; commands are
 allowed or refused by checking where the ship is and whether an encounter is in progress; one seeded Random
 is created in main and passed to Game and Encounter, and a test forces a fight by
 constructing an Encounter directly instead of rolling for one; overflow is avoided by

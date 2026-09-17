@@ -110,7 +110,7 @@
   <rect x="0" y="700" width="1100" height="110" fill="#ffffff"/>
   <line x1="0" y1="700" x2="1100" y2="700" stroke="#c9b99a" stroke-width="2"/>
   <text x="20" y="732" font-size="18" font-weight="700" fill="#111">The Channel map</text>
-  <text x="182" y="732" font-size="13" fill="#555">18 stops. Each 'sail' command moves the ship one stop along a line. Stop names are typed with spaces or hyphens.</text>
+  <text x="182" y="732" font-size="13" fill="#555">18 stops. Each 'sail' command moves the ship one stop along a line. Stop keys are typed in lower case with spaces, as look lists them.</text>
 
   <g font-size="13" fill="#111">
     <circle cx="30" cy="762" r="9" fill="#fff" stroke="#111" stroke-width="3.5"/>

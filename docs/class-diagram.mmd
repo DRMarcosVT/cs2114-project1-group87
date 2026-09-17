@@ -24,12 +24,12 @@ classDiagram
     }
 
     class CommandParser {
-        -HashMap~String, String~ usages
+        -HashMap~String, String~ templates
         +CommandParser()
         +parse(String line) Command
         +isVerb(String word) boolean
-        +usageOf(String verb) String
-        +allUsages() String
+        +templateOf(String verb) String
+        +allTemplates() String
         +parseCount(String text)$ int
     }
 
@@ -61,12 +61,13 @@ classDiagram
         -String name
         -String kind
         -int encounterPercent
-        -ArrayList~Location~ neighbours
+        +int MAX_NEIGHBOURS$
+        -Location[] neighbours
+        -int neighbourCount
         +Location(String key, String name, String kind, int encounterPercent)
         +connect(Location other) void
         +isNextTo(Location other) boolean
-        +stepToward(Location target) Location
-        +getNeighbours() List~Location~
+        +neighbourList() String
         +getKey() String
         +getName() String
         +getKind() String
