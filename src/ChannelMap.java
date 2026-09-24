@@ -4,11 +4,11 @@ import java.util.HashMap;
  * The map of the English Channel that the player sails around: 18 stops and the links
  * between them.
  *
- * <p>The map has three kinds of stop. There are 7 ports, 8 sea
+ * The map has three kinds of stop. There are 7 ports, 8 sea
  * lanes connecting the ports, and 3 high-seas locations. 
  * 
  * 
- * {@code sail <location>} moves the ship from a stop to a linked stop.
+ * Typing sail and a stop's key moves the ship to that stop if it is linked to the current one.
  * 
  */
 public class ChannelMap {
@@ -30,7 +30,7 @@ public class ChannelMap {
 
     /**
      * Builds the game's map. It creates the 18 stops, links them as drawn in
-     * {@code docs/channel-map.png}, with Sark as home. Every call returns a new map
+     * docs/channel-map.png, with Sark as home. Every call returns a new map
      * with its own {@link Location} objects, so two games never share a map.
      *
      * @return a new map with all 18 stops linked
@@ -130,18 +130,18 @@ public class ChannelMap {
 
     /**
      * Looks up a stop by the text the player typed. The text must match a key exactly,
-     * so {@code "Dover"}, {@code "dover."} and {@code "dover-boulogne"} find nothing.
+     * so "Dover", "dover." and "dover-boulogne" find nothing.
      *
-     * @param name the text typed after {@code sail}
-     * @return the stop with that key, or {@code null} if there is none
+     * @param name the text typed after sail
+     * @return the stop with that key, or null if there is none
      */
     public Location find(String name) {
         return stops.get(name);
     }
 
     /**
-     * Gets the player's home port, where the player starts and where {@code retire} is
-     * allowed. {@link #standard()} always stores it under the key {@code "sark"}.
+     * Gets the player's home port, where the player starts and where retire is
+     * allowed. {@link #standard()} always stores it under the key "sark".
      *
      * @return Sark
      */
