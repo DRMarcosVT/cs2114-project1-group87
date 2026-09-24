@@ -11,7 +11,9 @@ public class EnemyShip extends Ship {
     }
 
     private static int check(int notoriety) {
-        if (notoriety < 0) throw new IllegalArgumentException();
+        if (notoriety < 0) {
+            throw new IllegalArgumentException();
+        }
         return notoriety;
     }
 
@@ -39,6 +41,7 @@ public class EnemyShip extends Ship {
 
     public int getGain() { return gain; }
 
+    //format() string method is like f strings in python
     public String describe() {
         return String.format("A %s. %s Hull %d, %d men, %d cannons, armour %d.", getName(), description,
             getHull(), getCrew().getCount(), getCannons(), getArmour());
