@@ -124,7 +124,7 @@ How the numbers move:
    deficit, bottles wanted minus bottles drunk, costs `MORALE_PER_DRY_BOTTLE` per bottle:
    20 men with 1 bottle drink it and lose 5 morale, and with an empty hold lose 10. Then
    `roll` draws `nextInt(100)` against the stop's chance, and a second draw picks the
-   factory: in a sea lane below 70 is a merchant, else the coast guard; on the high seas
+   factory: in a sea lane below 60 is a merchant, else the coast guard; on the high seas
    below 50 is a pirate, else a merchant.
 6. A purchase buys the smallest of three numbers: the amount typed, how many units the
    gold covers (gold ÷ price, rounded down), and the room left before hull, crew or a level
@@ -354,7 +354,7 @@ player's stop to be a port.
   no crew, morale is unchanged.
 - `Encounter(...)`: Bad: a null player or enemy throws IAE.
 - `Encounter.roll` and `getEnemy`: a sea lane with `FixedRandom(0)` gives a merchant, with
-  `FixedRandom(34, 69)` a merchant and `FixedRandom(34, 70)` a coast guard; the high seas
+  `FixedRandom(34, 59)` a merchant and `FixedRandom(34, 60)` a coast guard; the high seas
   with `FixedRandom(0)` give a pirate and `FixedRandom(59)` a merchant. Bad: a port, a lane
   with `FixedRandom(35)`, or the high seas with `FixedRandom(99)`, gives null.
 - `Encounter.fight`: a fresh player against `merchant(0)` with `FixedRandom(0)` wins in

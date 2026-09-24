@@ -32,11 +32,11 @@ public class Encounter {
         int type = random.nextInt(100);
         int n = player.getNotoriety();
         /**
-         * if in a sea lane: ~70% of a merchant, ~30% change of coast guard
+         * if in a sea lane: ~60% chance of a merchant, ~40% chance of coast guard
          * if in high seas: ~50% change of a pirate, ~50% chance of a merchant
          */
         EnemyShip enemy = where.getKind().equals(Location.SEA_LANE)
-            ? (type < 70 ? EnemyShip.merchant(n) : EnemyShip.coastGuard(n))
+            ? (type < 60 ? EnemyShip.merchant(n) : EnemyShip.coastGuard(n))
             : (type < 50 ? EnemyShip.pirate(n) : EnemyShip.merchant(n));
         return new Encounter(player, enemy, random);
     }

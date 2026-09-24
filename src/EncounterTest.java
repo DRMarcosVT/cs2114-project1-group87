@@ -23,8 +23,8 @@ public class EncounterTest {
     public void rollPicksByStopAndDraw() {
         Encounter lane = Encounter.roll(map.find("barfleur sark"), player, new FixedRandom(0));
         assertEquals("Merchant", lane.getEnemy().getName());
-        assertEquals("Coast guard", Encounter.roll(map.find("barfleur sark"), player, new FixedRandom(34, 70)).getEnemy().getName());
-        assertEquals("Merchant", Encounter.roll(map.find("barfleur sark"), player, new FixedRandom(34, 69)).getEnemy().getName());
+        assertEquals("Coast guard", Encounter.roll(map.find("barfleur sark"), player, new FixedRandom(34, 60)).getEnemy().getName());
+        assertEquals("Merchant", Encounter.roll(map.find("barfleur sark"), player, new FixedRandom(34, 59)).getEnemy().getName());
         assertEquals("Pirate", Encounter.roll(map.find("west channel"), player, new FixedRandom(0)).getEnemy().getName());
         assertEquals("Merchant", Encounter.roll(map.find("west channel"), player, new FixedRandom(59)).getEnemy().getName());
         assertNull(Encounter.roll(map.find("sark"), player, new FixedRandom(0)));
