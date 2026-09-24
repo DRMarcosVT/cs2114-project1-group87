@@ -43,7 +43,8 @@ public class CrewTest {
         assertEquals(65, crew.getMorale());
         assertEquals(0, crew.drink(0));
         assertEquals(55, crew.getMorale());
-        assertEquals(3, new Crew(21, 70).drink(30));
+        assertEquals(2, new Crew(21, 70).drink(30));
+        assertEquals(1, new Crew(9, 70).drink(30));
         assertThrows(IllegalArgumentException.class, () -> crew.drink(-1));
     }
 

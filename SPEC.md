@@ -90,10 +90,10 @@ those bounds, so no caller can drive it outside.
 - `PlayerShip` adds `Location location`, never null; `int notoriety`; `int portsVisited`;
   `static final int MAX_LEVEL = 5`. It starts *default* at Sark with hull 100, crew 20 at
   morale 70, cannons 1, armour 1, gold 200 and rum 30.
-- `EnemyShip` adds final `int gain`, the notoriety a win over it pays, and final `String
+- `EnemyShip` adds final `int notorietyGain`, the notoriety a win over it pays, and final `String
   description`, the lookout's view of the ship, which `describe()` prints before the numbers. Each factory passes
   its kind's name and *default* base numbers, in the order hull, crew, cannons, armour,
-  gold, morale, gain, to one private constructor: `merchant` "Merchant", 40, 8, 1, 0, 150,
+  gold, morale, notoriety gain, to one private constructor: `merchant` "Merchant", 40, 8, 1, 0, 150,
   30, 1; `pirate` "Pirate", 60, 15, 2, 1, 100, 60, 2; `coastGuard` "Coast guard", 80, 20,
   3, 2, 50, 80, 3. The constructor adds an amount set by the player's notoriety: 2 hull
   per point, 1 crew per 2 points (capped at 40), 1 cannon and 1 armour per 10 points (each
@@ -126,10 +126,10 @@ How the numbers move:
    crew mutinying stops its fire, printed as a surrender.
 4. A fight round: the player fires `attackStrength() + random.nextInt(ROLL_RANGE)`; if the
    enemy still stands it fires back the same way, and rounds repeat until one is defeated.
-   A win moves the enemy's gold and rum across, adds the enemy's `getGain()` to notoriety, and
+   A win moves the enemy's gold and rum across, adds the enemy's `getNotorietyGain()` to notoriety, and
    calls `crew.onWin(gold)`.
-5. Each sail into a sea stop: the crew wants one bottle per ten men, a part-full ten
-   rounding up, so 20 men want 2 and 21 want 3. It drinks what the hold has, and the rum
+5. Each sail into a sea stop: the crew wants one bottle per full ten men and never fewer
+   than one, so 9 men want 1 and 20 or 21 men want 2. It drinks what the hold has, and the rum
    deficit, bottles wanted minus bottles drunk, costs `MORALE_PER_DRY_BOTTLE` per bottle: 20 men with 1 bottle
    aboard drink it and lose 5 morale, and with an empty hold they lose 10. Then `roll`
    draws `nextInt(100)` against the stop's chance, and a second draw picks the factory: in a
@@ -196,7 +196,7 @@ gold to the crew; `void addNotoriety(int)`; getters; `describe()` is the `status
 `EnemyShip`: `static EnemyShip merchant(int notoriety)`, `static EnemyShip pirate(int
 notoriety)` and `static EnemyShip coastGuard(int notoriety)` each return a new ship of
 that kind, IAE on a negative notoriety; the constructor is private, so the factories are
-the only way to build one; `int getGain()`; `describe()` is what the lookout sees, and
+the only way to build one; `int getNotorietyGain()`; `describe()` is what the lookout sees, and
 what `look` prints during a meeting.
 
 `Crew`: `Crew(int count, int morale)`, IAE when either is out of range; `int lose(int men)` and `int hire(int
@@ -309,7 +309,7 @@ also need the player's stop to be a port.
   still 200; a negative throws IAE.
 - `Ship.addRum` and `takeRum`: `addRum(10)` gives 40; `takeRum(5)` returns 5;
   `takeRum(50)` returns 30 and empties the hold; a negative throws IAE.
-- `PlayerShip(...)`: starts at Sark with notoriety 0; a null home throws IAE.
+- `PlayerShip(...)`: starts at Sark with notoriety 0, with hull 100, gold 200 and no ports visited.
 - `PlayerShip.moveTo`: sailing to the lane and back counts 1 port visited; Sark to Dover
   throws IAE.
 - `PlayerShip.addNotoriety`: 2 gives 2; a negative throws IAE.
@@ -321,7 +321,7 @@ also need the player's stop to be a port.
 - `EnemyShip.merchant`, `pirate` and `coastGuard`: `merchant(10)` has hull 60, crew 13,
   cannons 2, armour 1, gold 200, rum 13 and morale 30; `pirate(0)` has hull 60 and
   `coastGuard(0)` hull 80; each throws IAE for a notoriety of -1.
-- `EnemyShip.getGain`: 1 for a merchant, 2 for a pirate, 3 for the coast guard.
+- `EnemyShip.getNotorietyGain`: 1 for a merchant, 2 for a pirate, 3 for the coast guard.
 - `EnemyShip.describe`: `merchant(0)`'s text names a merchant.
 
 `Crew` and `Encounter`:

@@ -210,7 +210,7 @@ private static int check(int n) { if (n < 0) throw new IllegalArgumentException(
 
 The private constructor passes `hull + 2 * n`, `Math.min(5, cannons + n / 10)`,
 `Math.min(5, armour + n / 10)`, `new Crew(Math.min(40, crew + n / 2), morale)`,
-`gold + 5 * n` and rum `Math.min(40, crew + n / 2)` to `super`, then sets `gain`.
+`gold + 5 * n` and rum `Math.min(40, crew + n / 2)` to `super`, then sets `notorietyGain`.
 `describe()`: name, hull, crew, cannons.
 
 **`PlayerShip`** (Aidan). `super("Eustace", 100, 1, 1, new Crew(20, 70), 200, 30)`; IAE on a
@@ -231,7 +231,7 @@ null home; `location = home`.
 **`Encounter`** (Aidan). Constructor IAE on a null enemy.
 
 - `roll(where, player, random)`: `if (random.nextInt(100) >= where.getEncounterPercent()) return null;` then `int t = random.nextInt(100), n = player.getNotoriety();` and one conditional expression: sea lane `t < 70 ? merchant(n) : coastGuard(n)`, otherwise `t < 50 ? pirate(n) : merchant(n)`. A port's chance is 0, so the first line returns null there.
-- `fight()`: a `StringBuilder`; `for (int round = 1; !player.isDefeated() && !enemy.isDefeated(); round++)`: the player fires `attackStrength() + random.nextInt(ROLL_RANGE)`; if the enemy still stands it fires back; append one line per round. After the loop, if the enemy is defeated: move `getGold()` and `getRum()` across, `player.addNotoriety(enemy.getGain())`, `player.getCrew().onWin(gold)`, and append "surrenders" when the enemy's hull is above 0 (its crew mutinied) or "sinks" otherwise. Else append the loss line. Return the text.
+- `fight()`: a `StringBuilder`; `for (int round = 1; !player.isDefeated() && !enemy.isDefeated(); round++)`: the player fires `attackStrength() + random.nextInt(ROLL_RANGE)`; if the enemy still stands it fires back; append one line per round. After the loop, if the enemy is defeated: move `getGold()` and `getRum()` across, `player.addNotoriety(enemy.getNotorietyGain())`, `player.getCrew().onWin(gold)`, and append "surrenders" when the enemy's hull is above 0 (its crew mutinied) or "sinks" otherwise. Else append the loss line. Return the text.
 - `flee()`: `player.takeDamage(FLEE_DAMAGE); player.getCrew().onFlee();` return the text.
 
 Hand-checked against the §3 rules, so when one of these tests fails, suspect the code

@@ -7,17 +7,34 @@ public class Encounter {
     private final EnemyShip enemy;
     private final Random random;
 
+    /**
+     * constructor for the class
+     * @param player the player's ship object
+     * @param enemy the enemyship object
+     * @param random rng
+     */
     public Encounter(PlayerShip player, EnemyShip enemy, Random random) {
         if (player == null || enemy == null || random == null) throw new IllegalArgumentException();
         this.player = player;
         this.enemy = enemy;
         this.random = random;
     }
-
+    /**
+     * rng decides if an encounter happens and what kind it is
+     * @param where location of the encounter
+     * @param player player ship instance
+     * @param random rng
+     * @return encounter object the combat happens with
+     */
     public static Encounter roll(Location where, PlayerShip player, Random random) {
+        //if the roll is outside the probability range of encounter, nothing happens
         if (random.nextInt(100) >= where.getEncounterPercent()) return null;
         int type = random.nextInt(100);
         int n = player.getNotoriety();
+        /**
+         * if in a sea lane: ~70% of a merchant, ~30% change of coast guard
+         * if in high seas: ~50% change of a pirate, ~50% chance of a merchant
+         */
         EnemyShip enemy = where.getKind().equals(Location.SEA_LANE)
             ? (type < 70 ? EnemyShip.merchant(n) : EnemyShip.coastGuard(n))
             : (type < 50 ? EnemyShip.pirate(n) : EnemyShip.merchant(n));
@@ -38,7 +55,7 @@ public class Encounter {
         int plunder = enemy.getGold();
         player.addGold(plunder);
         player.addRum(enemy.getRum());
-        player.addNotoriety(enemy.getGain());
+        player.addNotoriety(enemy.getNotorietyGain());
         player.getCrew().onWin(plunder);
         return log.append(enemy.getHull() > 0 ? "Their crew surrenders." : "They sink.")
             .append(" Plunder: ").append(plunder).append(" gold, ").append(enemy.getRum()).append(" rum.").toString();

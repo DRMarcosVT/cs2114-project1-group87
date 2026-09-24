@@ -133,12 +133,13 @@ classDiagram
     }
 
     class EnemyShip {
-        -int gain
-        -EnemyShip(String name, int hull, int crew, int cannons, int armour, int gold, int morale, int gain, int notoriety)
+        -int notorietyGain
+        -String description
+        -EnemyShip(String name, String description, int baseHull, int baseCrew, int baseCannons, int baseArmour, int baseGold, int morale, int notorietyForWin, int notoriety)
         +merchant(int notoriety)$ EnemyShip
         +pirate(int notoriety)$ EnemyShip
         +coastGuard(int notoriety)$ EnemyShip
-        +getGain() int
+        +getNotorietyGain() int
         +describe() String
     }
 

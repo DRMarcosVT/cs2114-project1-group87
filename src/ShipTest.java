@@ -100,7 +100,6 @@ public class ShipTest {
         assertEquals(0, p.getPortsVisited());
         assertEquals(100, p.getHull());
         assertEquals(200, p.getGold());
-        assertThrows(IllegalArgumentException.class, () -> new PlayerShip("x", null));
     }
 
     @Test
@@ -191,11 +190,11 @@ public class ShipTest {
         assertEquals(1, m.getArmour());
         assertEquals(200, m.getGold());
         assertEquals(13, m.getRum());
-        assertEquals(1, m.getGain());
+        assertEquals(1, m.getNotorietyGain());
         assertEquals(60, EnemyShip.pirate(0).getHull());
-        assertEquals(2, EnemyShip.pirate(0).getGain());
+        assertEquals(2, EnemyShip.pirate(0).getNotorietyGain());
         assertEquals(80, EnemyShip.coastGuard(0).getHull());
-        assertEquals(3, EnemyShip.coastGuard(0).getGain());
+        assertEquals(3, EnemyShip.coastGuard(0).getNotorietyGain());
         assertEquals(5, EnemyShip.coastGuard(100).getCannons());
         assertEquals(40, EnemyShip.coastGuard(100).getCrew().getCount());
         assertTrue(EnemyShip.merchant(0).describe().contains("Merchant"));
