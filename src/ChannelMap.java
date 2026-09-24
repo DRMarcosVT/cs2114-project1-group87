@@ -29,111 +29,77 @@ public class ChannelMap {
     private final HashMap<String, Location> stops = new HashMap<>();
 
     /**
-     * Builds the game's map. It creates the 18 stops, links them as drawn in
-     * docs/channel-map.png, with Sark as home. Every call returns a new map
-     * with its own {@link Location} objects, so two games never share a map.
-     *
-     * @return a new map with all 18 stops linked
+     * Builds the game's map: stores the 18 stops and links each to the stops one sail away.
      */
-    public static ChannelMap standard() {
-        // One row per stop: {key the player types, name the game prints, third value}.
-        // For a port the third value is its nation; for any other stop it is the stop's
-        // kind, which sets its encounter chance.
-        String[][] locations = {
-            {"southampton", "Southampton", Port.ENGLISH},
-            {"winchelsea", "Winchelsea", Port.ENGLISH},
-            {"dover", "Dover", Port.ENGLISH},
-            {"barfleur", "Barfleur", Port.FRENCH},
-            {"dieppe", "Dieppe", Port.FRENCH},
-            {"boulogne", "Boulogne", Port.FRENCH},
-            {"sark", "Sark", Port.PIRATE},
-            {"southampton winchelsea", "Southampton-Winchelsea lane", Location.SEA_LANE},
-            {"winchelsea dover", "Winchelsea-Dover lane", Location.SEA_LANE},
-            {"barfleur dieppe", "Barfleur-Dieppe lane", Location.SEA_LANE},
-            {"dieppe boulogne", "Dieppe-Boulogne lane", Location.SEA_LANE},
-            {"barfleur sark", "Barfleur-Sark run", Location.SEA_LANE},
-            {"southampton barfleur", "Southampton-Barfleur crossing", Location.SEA_LANE},
-            {"winchelsea dieppe", "Winchelsea-Dieppe crossing", Location.SEA_LANE},
-            {"dover boulogne", "Dover-Boulogne crossing", Location.SEA_LANE},
-            {"west channel", "West Channel", Location.HIGH_SEAS},
-            {"mid channel", "Mid Channel", Location.HIGH_SEAS},
-            {"east channel", "East Channel", Location.HIGH_SEAS}};
+    public ChannelMap() {
+        /**
+         * add every stop on the map, the key is what the playertypes in, the value is the location object
+         */
+        stops.put("southampton", new Port("southampton", "Southampton", Port.ENGLISH));
+        stops.put("winchelsea", new Port("winchelsea", "Winchelsea", Port.ENGLISH));
+        stops.put("dover", new Port("dover", "Dover", Port.ENGLISH));
+        stops.put("barfleur", new Port("barfleur", "Barfleur", Port.FRENCH));
+        stops.put("dieppe", new Port("dieppe", "Dieppe", Port.FRENCH));
+        stops.put("boulogne", new Port("boulogne", "Boulogne", Port.FRENCH));
+        stops.put("sark", new Port("sark", "Sark", Port.PIRATE));
+        stops.put("southampton winchelsea", new Location("southampton winchelsea", "Southampton-Winchelsea lane", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("winchelsea dover", new Location("winchelsea dover", "Winchelsea-Dover lane", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("barfleur dieppe", new Location("barfleur dieppe", "Barfleur-Dieppe lane", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("dieppe boulogne", new Location("dieppe boulogne", "Dieppe-Boulogne lane", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("barfleur sark", new Location("barfleur sark", "Barfleur-Sark run", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("southampton barfleur", new Location("southampton barfleur", "Southampton-Barfleur crossing", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("winchelsea dieppe", new Location("winchelsea dieppe", "Winchelsea-Dieppe crossing", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("dover boulogne", new Location("dover boulogne", "Dover-Boulogne crossing", Location.SEA_LANE, SEA_LANE_CHANCE));
+        stops.put("west channel", new Location("west channel", "West Channel", Location.HIGH_SEAS, HIGH_SEAS_CHANCE));
+        stops.put("mid channel", new Location("mid channel", "Mid Channel", Location.HIGH_SEAS, HIGH_SEAS_CHANCE));
+        stops.put("east channel", new Location("east channel", "East Channel", Location.HIGH_SEAS, HIGH_SEAS_CHANCE));
+        
+        /**
+         * Every location has its neigbours connected by adding them to their respective neighbours array
+         * 
+         * connects the Port object to a Location object symmetrically: southampton is a neighbour of southampton winchelsea and vice versa
+         */
+        stops.get("southampton").connect(stops.get("southampton winchelsea"));
+        stops.get("southampton").connect(stops.get("southampton barfleur"));
+        stops.get("southampton").connect(stops.get("west channel"));
 
-        // One row per link: the keys of two stops a single sail moves between. A lane
-        // needs two rows, one to each of its ports. Each stop lists its neighbours in the
-        // order its links appear here, which is the order "You can sail to:" prints them.
-        String[][] links = {
-            // English coast lanes
-            {"southampton winchelsea", "southampton"}, {"southampton winchelsea", "winchelsea"},
-            {"winchelsea dover", "winchelsea"}, {"winchelsea dover", "dover"},
-            // French coast lanes
-            {"barfleur dieppe", "barfleur"}, {"barfleur dieppe", "dieppe"},
-            {"dieppe boulogne", "dieppe"}, {"dieppe boulogne", "boulogne"},
-            // The run between Barfleur and Sark
-            {"barfleur sark", "barfleur"}, {"barfleur sark", "sark"},
-            // Lanes across the Channel
-            {"southampton barfleur", "southampton"}, {"southampton barfleur", "barfleur"},
-            {"winchelsea dieppe", "winchelsea"}, {"winchelsea dieppe", "dieppe"},
-            {"dover boulogne", "dover"}, {"dover boulogne", "boulogne"},
-            // High seas: each stretch touches its nearest ports and the stretch next to it
-            {"west channel", "southampton"}, {"west channel", "sark"},
-            {"west channel", "barfleur"}, {"west channel", "mid channel"},
-            {"mid channel", "winchelsea"}, {"mid channel", "dieppe"},
-            {"mid channel", "east channel"},
-            {"east channel", "dover"}, {"east channel", "boulogne"}};
+        stops.get("winchelsea").connect(stops.get("southampton winchelsea"));
+        stops.get("winchelsea").connect(stops.get("winchelsea dover"));
+        stops.get("winchelsea").connect(stops.get("winchelsea dieppe"));
+        stops.get("winchelsea").connect(stops.get("mid channel"));
 
-        ChannelMap map = new ChannelMap();
+        stops.get("dover").connect(stops.get("winchelsea dover"));
+        stops.get("dover").connect(stops.get("dover boulogne"));
+        stops.get("dover").connect(stops.get("east channel"));
 
-        // Turn each row into a stop object and store it under its key.
-        for (String[] row : locations) {
-            String key = row[0];
-            String name = row[1];
-            String kindOrNation = row[2];
-            if (kindOrNation.equals(Location.SEA_LANE)) {
-                map.add(new Location(key, name, Location.SEA_LANE, SEA_LANE_CHANCE));
-            }
-            else if (kindOrNation.equals(Location.HIGH_SEAS)) {
-                map.add(new Location(key, name, Location.HIGH_SEAS, HIGH_SEAS_CHANCE));
-            }
-            else {
-                map.add(new Port(key, name, kindOrNation));
-            }
-        }
+        stops.get("barfleur").connect(stops.get("barfleur dieppe"));
+        stops.get("barfleur").connect(stops.get("barfleur sark"));
+        stops.get("barfleur").connect(stops.get("southampton barfleur"));
+        stops.get("barfleur").connect(stops.get("west channel"));
 
-        // Record each link on both of its stops.
-        for (String[] link : links) {
-            map.connect(link[0], link[1]);
-        }
+        stops.get("dieppe").connect(stops.get("barfleur dieppe"));
+        stops.get("dieppe").connect(stops.get("dieppe boulogne"));
+        stops.get("dieppe").connect(stops.get("winchelsea dieppe"));
+        stops.get("dieppe").connect(stops.get("mid channel"));
 
-        return map;
+        stops.get("boulogne").connect(stops.get("dieppe boulogne"));
+        stops.get("boulogne").connect(stops.get("dover boulogne"));
+        stops.get("boulogne").connect(stops.get("east channel"));
+
+        stops.get("sark").connect(stops.get("barfleur sark"));
+        stops.get("sark").connect(stops.get("west channel"));
+
+        stops.get("west channel").connect(stops.get("mid channel"));
+
+        stops.get("mid channel").connect(stops.get("east channel"));
     }
 
     /**
-     * Stores a stop under its key. Only {@link #standard()} calls this.
-     *
-     * @param stop the stop to store
-     */
-    private void add(Location stop) {
-        stops.put(stop.getKey(), stop);
-    }
-
-    /**
-     * Links two stored stops, so each lists the other as a neighbour and a single sail
-     * moves between them. Only {@link #standard()} calls this.
-     *
-     * @param keyA the key of one stop
-     * @param keyB the key of the other stop
-     */
-    private void connect(String keyA, String keyB) {
-        stops.get(keyA).connect(stops.get(keyB));
-    }
-
-    /**
-     * Looks up a stop by the text the player typed. The text must match a key exactly,
-     * so "Dover", "dover." and "dover-boulogne" find nothing.
+     * 
+     * looks up a stop in the stops registry, returns the value of the key
      *
      * @param name the text typed after sail
-     * @return the stop with that key, or null if there is none
+     * @return the stop with that key, null if there is none
      */
     public Location find(String name) {
         return stops.get(name);
@@ -141,7 +107,9 @@ public class ChannelMap {
 
     /**
      * Gets the player's home port, where the player starts and where retire is
-     * allowed. {@link #standard()} always stores it under the key "sark".
+     * allowed. The constructor always stores it under the key "sark".
+     * 
+     * 
      *
      * @return Sark
      */

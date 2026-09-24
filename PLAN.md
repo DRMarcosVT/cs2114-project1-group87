@@ -78,7 +78,7 @@ after its §6 row, `@BeforeEach` building `map = ChannelMap.standard()` and
 | Test class | Covers | Owner | Rows in §6 |
 | --- | --- | --- | --- |
 | `GameTest` | `Game` | Marcos | 2 bullets, about 9 tests |
-| `CommandParserTest` | `CommandParser`, `Command` | Aidan | 1 bullet, about 10 tests including `Command`'s null-verb IAE, `getWord` and `toString` |
+| `CommandParserTest` | `CommandParser`, `Command` | Aidan | 1 bullet, about 10 tests including `Command`'s null-verb IAE and `getWord` |
 | `ChannelMapTest` | `ChannelMap`, `Location`, `Port` | Marcos | 11 bullets, about 14 tests |
 | `ShipTest` | `Ship`, `PlayerShip`, `EnemyShip` | Aidan | 13 bullets, about 22 tests |
 | `CrewTest` | `Crew` | Aidan | 4 bullets, about 8 tests |
@@ -96,7 +96,7 @@ abstract, so `ShipTest` tests the base class through a two-line anonymous subcla
 3. One clamp helper, `static int clamp(int v, int lo, int hi) { return Math.max(lo, Math.min(hi, v)); }`, in `Crew`; `Ship`'s setters call `Crew.clamp`.
 4. Every IAE is one line, no message: `if (raw < 0) throw new IllegalArgumentException();`. No test reads a message.
 5. `Ship`'s setters and `Crew.clamp` are package-private (no modifier): shorter than `protected`, and the tests in the same package can call `setHull(5)`.
-6. Nothing beyond §4: no `equals`, no `hashCode`, no `toString` except `Command`'s, no interface, no getter that neither `Game` nor a test reads.
+6. Nothing beyond §4: no `equals`, no `hashCode`, no `toString`, no interface, no getter that neither `Game` nor a test reads.
 7. A `switch` case in `dispatch` longer than four lines becomes a private method; shorter ones stay inline.
 8. Strings the player sees are literals at the point of use. No message constants, no message class.
 
@@ -108,8 +108,8 @@ after everything it calls exists.
 ### Tier 0
 
 **`Command`** (Aidan). Two `final String` fields, constructor with one IAE line on a null
-verb, two getters, `getWord(int i)` as `String[] w = argument.split(" "); return i < w.length ? w[i] : "";`,
-`toString()` as `verb + " " + argument` trimmed. About 20 lines.
+verb, two getters, `getWord(int i)` as `String[] w = argument.split(" "); return i < w.length ? w[i] : "";`.
+About 20 lines.
 
 **`Crew`** (Aidan). Fields `count`, `morale`, `greed`. Constructor clamps both arguments.
 

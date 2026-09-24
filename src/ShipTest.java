@@ -90,7 +90,7 @@ public class ShipTest {
         assertThrows(IllegalArgumentException.class, () -> ship.takeRum(-1));
     }
 
-    private static PlayerShip player() { return new PlayerShip("Eustace", ChannelMap.standard().getHome()); }
+    private static PlayerShip player() { return new PlayerShip("Eustace", new ChannelMap().getHome()); }
 
     @Test
     public void playerStartsAtSark() {
@@ -105,7 +105,7 @@ public class ShipTest {
 
     @Test
     public void moveToCountsPortArrivals() {
-        ChannelMap map = ChannelMap.standard();
+        ChannelMap map = new ChannelMap();
         PlayerShip p = new PlayerShip("Eustace", map.getHome());
         p.moveTo(map.find("barfleur sark"));
         assertEquals(0, p.getPortsVisited());

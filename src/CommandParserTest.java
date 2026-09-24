@@ -51,8 +51,6 @@ public class CommandParserTest {
         assertEquals("rum", c.getWord(0));
         assertEquals("5", c.getWord(1));
         assertEquals("", c.getWord(2));
-        assertEquals("buy rum 5", c.toString());
-        assertEquals("look", new Command("look", "").toString());
     }
 
     @Test

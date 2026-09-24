@@ -36,15 +36,11 @@ classDiagram
         +getVerb() String
         +getArgument() String
         +getWord(int index) String
-        +toString() String
     }
 
     class ChannelMap {
         -HashMap~String, Location~ stops
-        -Port home
-        +standard()$ ChannelMap
-        -add(Location stop) void
-        -connect(String keyA, String keyB) void
+        +ChannelMap()
         +find(String name) Location
         +getHome() Port
     }

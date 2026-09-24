@@ -22,7 +22,7 @@ public class Game {
 
     public static void main(String[] args) {
         Random random = args.length > 0 ? new Random(Long.parseLong(args[0])) : new Random();
-        new Game(new Scanner(System.in), ChannelMap.standard(), random).run();
+        new Game(new Scanner(System.in), new ChannelMap(), random).run();
     }
 
     public void run() {

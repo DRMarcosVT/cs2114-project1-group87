@@ -67,13 +67,11 @@ those bounds, so no caller can drive it outside.
   is trimmed, lower-cased or stripped of punctuation.
 - `ChannelMap`: final `HashMap<String, Location> stops`, the 18 stops keyed by the stop's
   name in lower case with a space between words, such as `dover boulogne`; `getHome()` looks
-  Sark up in `stops` under the key `sark`; Sark is where the player starts and retires. `ChannelMap.standard()` builds the game's
-  map from two local `String[][]` tables, `locations` (18 rows of key, name and nation or kind)
-  and `links` (25 pairs of keys): its private `add` puts one `Location` or `Port` per row
-  into `stops`, keyed by the text the player types; its private `connect` then runs once per link, looks the
-  two keys up and calls `Location.connect`, which puts each of the two stops into the
-  other's `neighbours` array. Both helpers are private because `standard()` is their only
-  caller. Nothing changes the map after it returns. `sail` looks the
+  Sark up in `stops` under the key `sark`; Sark is where the player starts and retires. The constructor `ChannelMap()` builds the game's
+  map: it creates the 18 stops with one `new Location(...)` or `new Port(...)` each and puts
+  each into `stops` with `stops.put(key, stop)`, keyed by the text the player types; it then makes the 25 links, one line each of the form
+  `stops.get(a).connect(stops.get(b))`, and `Location.connect` puts each of the two stops into the
+  other's `neighbours` array. Nothing changes the map after the constructor returns. `sail` looks the
   typed key up in `stops`.
 - `Location`: final `String key`, `name` and `kind`; final `int encounterPercent`, 0 for a
   port, 35 for a sea lane and 60 for the high seas *default*; final `Location[]
@@ -147,7 +145,7 @@ How the numbers move:
 that into the message the player sees. IAE means it throws `IllegalArgumentException`.
 
 `Game`: `Game(Scanner in, ChannelMap map, Random random)`; `static void main(String[]
-args)` builds a game on `System.in`, `ChannelMap.standard()` and `new Random()`, or
+args)` builds a game on `System.in`, `new ChannelMap()` and `new Random()`, or
 `new Random(seed)` when a number is given as the first argument, and runs it; `void run()` prints the opening scene and loops read, parse, dispatch, print while
 `running` is true; `String dispatch(Command c)` applies one command and returns the text
 to print, and when the command sinks the ship, mutinies the crew, retires the player or
@@ -164,10 +162,10 @@ for anything else.
 
 `Command`: `Command(String verb, String argument)`, IAE on a null verb; `String
 getVerb()`; `String getArgument()`; `String getWord(int i)` gives the i-th argument word
-or `""`; `String toString()` gives "sail dover".
+or `""`.
 
-`ChannelMap`: `static ChannelMap standard()` adds the 18 stops and connects each of the
-25 links through its private helpers `add` and `connect`; `Location find(String name)`
+`ChannelMap`: `ChannelMap()` adds the 18 stops and links each of the
+25 pairs with `Location.connect`; `Location find(String name)`
 gives the stop or null; `Port getHome()`.
 
 `Location`: `Location(String key, String name, String kind, int
@@ -284,8 +282,8 @@ also need the player's stop to be a port.
 
 `ChannelMap`, `Location` and `Port`:
 
-- `ChannelMap.standard()`: a map of 18 stops with home `sark`, every link recorded on both
-  stops, which also exercises the private `add` and `connect`.
+- `ChannelMap()`: a map of 18 stops with home `sark`, every link recorded on both
+  stops.
 - `ChannelMap.find`: `dover boulogne` gives the lane; `dover now please`, `dover-boulogne`,
   `atlantis`, `help` and `dövér` give null.
 - `Location(...)`: a lane built with chance 35 reports 35.
@@ -363,4 +361,4 @@ The below revisions were a product of group discussion.
    factories and scaled by notoriety. This makes the player's ship and the enemy ships birds of a feather instead of different classes with different rules, making combat simpler to code.
 3. Buying more than you can afford now empties your treasury instead of throwing or stopping you. Command strings are also not normalised, the player knows what they can and cannot type, if they don't do so, they can't play, this removes the hurdle of string normalisation.
 4. `main` takes an optional seed argument, so a demo or a grader can replay the same voyage; `docs/demo.txt` is the seed 3 transcript. Own reflection while writing the presentation.
-5. `EnemyType` and `Describable` were removed and `ChannelMap.add` and `connect` made private (see §1), which took the class count from 13 to 11 and removed twelve public methods from the test plan. Group discussion with GenAI probing.
+5. `EnemyType` and `Describable` were removed and `ChannelMap.add` and `connect` made private, then removed (see §1), which took the class count from 13 to 11 and removed twelve public methods from the test plan. Group discussion with GenAI probing.

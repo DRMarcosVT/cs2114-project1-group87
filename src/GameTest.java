@@ -11,10 +11,10 @@ public class GameTest {
     private Game game;
 
     @BeforeEach
-    public void setUp() { game = new Game(new Scanner(""), ChannelMap.standard(), new FixedRandom(0)); }
+    public void setUp() { game = new Game(new Scanner(""), new ChannelMap(), new FixedRandom(0)); }
 
     private String run(String input) {
-        Game g = new Game(new Scanner(input), ChannelMap.standard(), new FixedRandom(0));
+        Game g = new Game(new Scanner(input), new ChannelMap(), new FixedRandom(0));
         PrintStream original = System.out;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
@@ -86,12 +86,12 @@ public class GameTest {
         game.getPlayer().setHull(1);
         assertTrue(say("fight").contains("Your ship is lost"));
         assertFalse(game.isRunning());
-        Game greedy = new Game(new Scanner(""), ChannelMap.standard(), new FixedRandom(0));
+        Game greedy = new Game(new Scanner(""), new ChannelMap(), new FixedRandom(0));
         greedy.getPlayer().getCrew().onWin(2000);
         greedy.getPlayer().addGold(100);
         assertTrue(greedy.dispatch(new Command("sail", "barfleur sark")).contains("greed"));
         assertFalse(greedy.isRunning());
-        Game dry = new Game(new Scanner(""), ChannelMap.standard(), new FixedRandom(99));
+        Game dry = new Game(new Scanner(""), new ChannelMap(), new FixedRandom(99));
         dry.getPlayer().takeRum(30);
         for (int i = 0; i < 6; i++) dry.getPlayer().getCrew().onFlee();
         assertTrue(dry.dispatch(new Command("sail", "barfleur sark")).contains("morale broke"));

@@ -1,12 +1,19 @@
 public class Location {
+    /**
+     * Making the port type fields static and final constants ensures all instances of
+     * Location have these values and they cannot be pointed to another object
+     */
     public static final String PORT = "port";
     public static final String SEA_LANE = "sea lane";
     public static final String HIGH_SEAS = "high seas";
+
+    //annot be pointed away
     public static final int MAX_NEIGHBOURS = 4;
     private final String key;
     private final String name;
     private final String kind;
     private final int encounterPercent;
+    
     private final Location[] neighbours = new Location[MAX_NEIGHBOURS];
     private int neighbourCount;
 

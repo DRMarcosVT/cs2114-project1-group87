@@ -9,7 +9,7 @@ public class EncounterTest {
 
     @BeforeEach
     public void setUp() {
-        map = ChannelMap.standard();
+        map = new ChannelMap();
         player = new PlayerShip("Eustace", map.getHome());
     }
 

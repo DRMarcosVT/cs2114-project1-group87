@@ -45,7 +45,7 @@ public class ChannelMapTest {
 
     @Test
     public void standardMapHasEighteenLinkedStops() {
-        ChannelMap map = ChannelMap.standard();
+        ChannelMap map = new ChannelMap();
         assertEquals("sark", map.getHome().getKey());
         assertEquals("barfleur sark, west channel", map.getHome().neighbourList());
         String[] keys = {"southampton", "winchelsea", "dover", "barfleur", "dieppe", "boulogne", "sark",
@@ -62,7 +62,7 @@ public class ChannelMapTest {
 
     @Test
     public void findIsExact() {
-        ChannelMap map = ChannelMap.standard();
+        ChannelMap map = new ChannelMap();
         assertEquals(Location.SEA_LANE, map.find("dover boulogne").getKind());
         for (String bad : new String[] {"dover now please", "dover-boulogne", "atlantis", "help", "dövér", "Dover", ""}) {
             assertNull(map.find(bad));
