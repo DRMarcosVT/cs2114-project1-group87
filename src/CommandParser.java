@@ -1,6 +1,10 @@
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+/**
+ * builds commands in Game.run()
+ * CommandParser
+ */
 public class CommandParser {
     //LinkedHashMap is an ordered hashmap, aids in learning where commands are when 
     //calling help

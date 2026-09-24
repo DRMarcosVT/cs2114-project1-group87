@@ -14,7 +14,7 @@ public class Game {
     private Encounter encounter;
     private final Random random;
     private boolean running = true;
-    private boolean confirmingQuit;
+    private boolean confirmingQuit = false;
 
     /**
      * game constructor
@@ -34,23 +34,22 @@ public class Game {
     }
 
     /**
-     * Starts a game on the keyboard. A number given as the first argument seeds the dice,
-     * so java -cp bin Game 3 replays the voyage in docs/demo.txt; with no argument the
-     * dice differ every run.
      * 
      * starts a game. 
-     * run with java -cp bin game 3
+     * run with java -cp bin game 
      *
      * @param args an optional seed
      */
     public static void main(String[] args) {
+        //seeds the rng if an argument was passed
+        //seed Random with a Long if there is an argument, otherwise use the default argument
         Random random = args.length > 0 ? new Random(Long.parseLong(args[0])) : new Random();
+        //new game object 
         new Game(new Scanner(System.in), new ChannelMap(), random).run();
-    }
+    } 
 
     /**
-     * Prints the opening scene, then reads and answers one line at a time until the game
-     * ends or the input runs out.
+     * prints opening scene, answers one input at a time, simulating a game
      */
     public void run() {
         show("You are Eustace the Monk, moored at Sark with 200 gold. Retire here with "
@@ -86,9 +85,13 @@ public class Game {
     public String dispatch(Command command) {
         String verb = command.getVerb();
         String arg = command.getArgument();
+        //set confirmingquit to false again to prevent the quit prompt from persisting
         if (confirmingQuit) {
             confirmingQuit = false;
-            return verb.equals("yes") ? end("You quit") : "Carrying on.";
+            if (verb.equals("yes")) {
+                return end("You quit");
+            }
+            return "Carrying on.";
         }
         if (verb.isEmpty()) return "";
         if (!parser.isVerb(verb)) return "I don't understand '" + verb + "'. Type help.";
@@ -100,30 +103,63 @@ public class Game {
             return "You must be in port.";
         }
         String template = parser.templateOf(verb);
+        //if the verb needs an argument and none was given, return the acceptable form of the command
         if (template.contains("<") && arg.isEmpty()) return template;
         try {
-            return switch (verb) {
-                case "look" -> fighting ? encounter.getEnemy().describe() : player.getLocation().describe();
-                case "status" -> player.describe();
-                case "help" -> parser.allTemplates();
-                case "quit" -> { confirmingQuit = true; yield "Quit without saving? Type yes."; }
-                case "sail" -> sail(arg);
-                case "repair" -> "Repaired " + player.repair(CommandParser.parseCount(arg), Port.REPAIR_PRICE) + " points.";
-                case "hire" -> "Hired " + player.hire(CommandParser.parseCount(arg), Port.HIRE_PRICE) + " men.";
-                case "buy" -> buy(command);
-                case "bonus" -> player.payBonus(CommandParser.parseCount(arg)) ? "The crew cheers." : "You don't hold that much gold.";
-                case "fight" -> { String log = encounter.fight(); encounter = null; yield log + outcome(); }
-                case "flee" -> { String text = encounter.flee(); encounter = null; yield text + outcome(); }
-                default -> retire();
-            };
+            if (verb.equals("look")) {
+                if (fighting) {
+                    return encounter.getEnemy().describe();
+                }
+                return player.getLocation().describe();
+            }
+            if (verb.equals("status")) {
+                return player.describe();
+            }
+            if (verb.equals("help")) {
+                return parser.allTemplates();
+            }
+            if (verb.equals("quit")) {
+                confirmingQuit = true;
+                return "Quit without saving? Type yes.";
+            }
+            if (verb.equals("sail")) {
+                return sail(arg);
+            }
+            if (verb.equals("repair")) {
+                return "Repaired " + player.repair(CommandParser.parseCount(arg), Port.REPAIR_PRICE) + " points.";
+            }
+            if (verb.equals("hire")) {
+                return "Hired " + player.hire(CommandParser.parseCount(arg), Port.HIRE_PRICE) + " men.";
+            }
+            if (verb.equals("buy")) {
+                return buy(command);
+            }
+            if (verb.equals("bonus")) {
+                if (player.payBonus(CommandParser.parseCount(arg))) {
+                    return "The crew cheers.";
+                }
+                return "You don't hold that much gold.";
+            }
+            if (verb.equals("fight")) {
+                String log = encounter.fight();
+                encounter = null;
+                return log + outcome();
+            }
+            if (verb.equals("flee")) {
+                String text = encounter.flee();
+                encounter = null;
+                return text + outcome();
+            }
+            // the only verb left is retire
+            return retire();
         } catch (NumberFormatException e) {
             return "Type a whole number of 0 or more.";
         }
     }
 
     /**
-     * Sails to a neighbouring stop. Arriving anywhere other than a port makes the crew drink
-     * and rolls for an encounter.
+     * sails to a neighbouring node, if its not a port, the crew drinks and the encounter rolls
+     * 
      *
      * @param name the stop's key as the player typed it
      * @return the new stop's description, a sighting if an enemy appears, and the ending if
@@ -146,40 +182,53 @@ public class Game {
     }
 
     /**
-     * Buys cannons, armour or rum at the current port. The first word after buy picks the
-     * item; for rum the second word is the number of bottles.
+     * execute the buy command
      *
      * @param command the buy command, whose argument names the item
-     * @return what was bought, or why nothing was
-     * @throws NumberFormatException if the rum count is not a whole number of 0 or more
+     * @return what was bought, or why nothing was bought
      */
     private String buy(Command command) {
         Port here = (Port) player.getLocation();
-        return switch (command.getWord(0)) {
-            case "cannons" -> player.upgradeCannons(here.upgradePrice(player.getCannons() + 1))
-                ? "Cannons now level " + player.getCannons() + "." : "No: already level 5, or not enough gold.";
-            case "armour" -> player.upgradeArmour(here.upgradePrice(player.getArmour() + 1))
-                ? "Armour now level " + player.getArmour() + "." : "No: already level 5, or not enough gold.";
-            case "rum" -> "Bought " + player.buyRum(CommandParser.parseCount(command.getWord(1)), here.rumPrice()) + " bottles.";
-            default -> "You can buy cannons, armour or rum.";
-        };
+        //get the first word of the object, command parser has already split the input into verb + argument
+        String item = command.getWord(0);
+        /**
+         * for cannons and armour, the command upgrades them +1
+         */
+        if (item.equals("cannons")) {
+            if (player.upgradeCannons(here.upgradePrice(player.getCannons() + 1))) {
+                return "Cannons now level " + player.getCannons() + ".";
+            }
+            return "No: already level 5, or not enough gold.";
+        }
+        if (item.equals("armour")) {
+            if (player.upgradeArmour(here.upgradePrice(player.getArmour() + 1))) {
+                return "Armour now level " + player.getArmour() + ".";
+            }
+            return "No: already level 5, or not enough gold.";
+        }
+        if (item.equals("rum")) {
+            int bottles = CommandParser.parseCount(command.getWord(1));
+            return "Bought " + player.buyRum(bottles, here.rumPrice()) + " bottles.";
+        }
+        return "You can buy cannons, armour or rum.";
     }
 
     /**
-     * Ends the game with a win if the player is at Sark holding at least GOLD_TARGET gold.
+     * game ends if the player retires with the right amount of gold
      *
      * @return the winning ending, or how much more gold is needed, or that retiring only
-     *     works at Sark
+     *     works at sark
      */
     private String retire() {
+        //player must be at sark
         if (player.getLocation() != map.getHome()) return "You can only retire at Sark.";
+        //player must be wealthy enough
         int needed = GOLD_TARGET - player.getGold();
         return needed > 0 ? "You need " + needed + " more gold to retire." : end("You retire to the abbey, rich");
     }
 
     /**
-     * Checks whether the last sail, fight or flee lost the game: the ship sinks at hull 0 or
-     * crew 0, and the crew mutinies at morale 0 or greed 100.
+     * checks if the last even ended the game
      *
      * @return the ending on a new line if the game is lost, otherwise an empty string
      */
@@ -191,32 +240,34 @@ public class Game {
     }
 
     /**
-     * Stops the game and describes how it ended.
+     * game over, describes ending stats
      *
-     * @param how the first sentence of the ending, such as You quit
-     * @return that sentence with the final gold and the number of ports visited
+     * @param how the first sentence of the ending
+     * @return the how sentence with the final gold and the number of ports visited
      */
     private String end(String how) {
+        //boolean ends the game
         running = false;
+        //game over message
         return String.format("%s. Final gold %d, ports visited %d.", how, player.getGold(), player.getPortsVisited());
     }
 
     /**
-     * Tells whether the game is still going.
+     * checks whether the game is still going
      *
      * @return false once any ending has happened
      */
     public boolean isRunning() { return running; }
 
     /**
-     * Gets the player's ship.
+     * gets the player's ship
      *
      * @return the ship, so tests can check its gold, hull and crew
      */
     public PlayerShip getPlayer() { return player; }
 
     /**
-     * Gets the fight in progress.
+     * get the fight in progress
      *
      * @return the encounter, or null when no enemy is alongside
      */
