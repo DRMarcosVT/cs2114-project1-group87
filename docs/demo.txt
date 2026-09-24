@@ -1,0 +1,113 @@
+Demo transcript. Run from the project folder after building in Eclipse:
+
+    java -cp bin Game 3
+
+Seed 3 gives a merchant on the first sail. Lines starting with > are typed.
+
+============================================================
+You are Eustace the Monk, moored at Sark with 200 gold. Retire here with 1000 gold to win. Type help for the commands.
+Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+============================================================
+> look
+============================================================
+Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+============================================================
+> status
+============================================================
+Hull 100/100. Crew 20, morale 70, greed 0. Cannons 1, armour 1. Rum 30. Gold 200. Notoriety 0. At Sark.
+============================================================
+> sail barfleur sark
+============================================================
+Barfleur-Sark run, sea lane. You can sail to: barfleur, sark.
+Sail ho! A Merchant: hull 40, 8 men, 1 cannons, armour 0. Fight or flee?
+============================================================
+> fight
+============================================================
+Round 1: you deal 12, they deal 3.
+Round 2: you deal 12, they deal 1.
+Round 3: you deal 15.
+Their crew surrenders. Plunder: 150 gold, 8 rum.
+============================================================
+> status
+============================================================
+Hull 96/100. Crew 20, morale 80, greed 7. Cannons 1, armour 1. Rum 36. Gold 350. Notoriety 1. At Barfleur-Sark run.
+============================================================
+> sail barfleur
+============================================================
+Barfleur, French port. You can sail to: barfleur dieppe, barfleur sark, southampton barfleur, west channel. Repair 2 gold a point, hire 15 a man, rum 4 a bottle, upgrades 100 times the level.
+============================================================
+> repair 10
+============================================================
+Repaired 4 points.
+============================================================
+> hire 5
+============================================================
+Hired 5 men.
+============================================================
+> buy rum 10
+============================================================
+Bought 10 bottles.
+============================================================
+> sail barfleur sark
+============================================================
+Barfleur-Sark run, sea lane. You can sail to: barfleur, sark.
+============================================================
+> sail sark
+============================================================
+Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+============================================================
+> bonus 50
+============================================================
+The crew cheers.
+============================================================
+> retire
+============================================================
+You need 823 more gold to retire.
+============================================================
+> quit
+============================================================
+Quit without saving? Type yes.
+============================================================
+> yes
+============================================================
+You quit. Final gold 177, ports visited 2.
+============================================================
+
+Bad input to show, from a fresh game at Sark:
+
+============================================================
+You are Eustace the Monk, moored at Sark with 200 gold. Retire here with 1000 gold to win. Type help for the commands.
+Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+============================================================
+> sial
+============================================================
+I don't understand 'sial'. Type help.
+============================================================
+> sail
+============================================================
+sail <stop>
+============================================================
+> sail dover
+============================================================
+Not from here. You can sail to: barfleur sark, west channel.
+============================================================
+> hire 5 men
+============================================================
+Type a whole number of 0 or more.
+============================================================
+> hire 2147483647
+============================================================
+Hired 13 men.
+============================================================
+> fight
+============================================================
+Nothing to fight.
+============================================================
+> quit
+============================================================
+Quit without saving? Type yes.
+============================================================
+> yes
+============================================================
+You quit. Final gold 5, ports visited 0.
+============================================================

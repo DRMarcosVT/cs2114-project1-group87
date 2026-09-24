@@ -83,7 +83,6 @@ Note: your TA will evaluate whether these stretch goals are truly non-essential 
 
 1. Two-crown politics, where the player takes privateering contracts, holds a standing with England and with France that rises and falls with every raid, and is outlawed by whichever crown the player angers past its floor. As the game takes place during the 100 years war, the player will be incentivised to backstab their patron state because their standing can fall to outlaw levels if they raid friendly ships plus random shifts in standing with the crown.
 2. Buying an estate with the retirement gold and holding it through yearly tax demands and raids, this adds a farming mechanic that feels like a retirement but can also be rest from the action and a means to peacefully gather wealth (possibly to return to piracy). Raids and taxation incentivise the player to turn to piracy seasonally (mirroring historical piracy). This adds a capitalism spin to the piracy game.
-3. Crew's morale and greed bars, run as two bars beside hull and gold, where the men drink rum as challenges appear and demand a share of everything that comes aboard, and either bar reaching its extreme results a mutiny and a game over screen. This is another party the captain has to satiate: the crew will drink more rum after big wins and big losses, and will demand more gold after big wins or big losses.
 
 ### The politics system in detail
 

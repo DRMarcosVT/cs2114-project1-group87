@@ -1,11 +1,6 @@
 classDiagram
     direction TB
 
-    class Describable {
-        <<interface>>
-        +describe() String
-    }
-
     class Game {
         +int GOLD_TARGET$
         -Scanner in
@@ -48,8 +43,8 @@ classDiagram
         -HashMap~String, Location~ stops
         -Port home
         +standard()$ ChannelMap
-        +add(Location stop) void
-        +connect(String keyA, String keyB) void
+        -add(Location stop) void
+        -connect(String keyA, String keyB) void
         +find(String name) Location
         +getHome() Port
     }
@@ -145,33 +140,13 @@ classDiagram
     }
 
     class EnemyShip {
-        -EnemyType type
-        +EnemyShip(EnemyType type, int notoriety)
-        +getType() EnemyType
-        +describe() String
-    }
-
-    class EnemyType {
-        +EnemyType MERCHANT$
-        +EnemyType PIRATE$
-        +EnemyType COAST_GUARD$
-        -String name
-        -int hull
-        -int crew
-        -int cannons
-        -int armour
-        -int gold
-        -int morale
         -int gain
-        -EnemyType(String name, int hull, int crew, int cannons, int armour, int gold, int morale, int gain)
-        +getName() String
-        +getHull() int
-        +getCrew() int
-        +getCannons() int
-        +getArmour() int
-        +getGold() int
-        +getMorale() int
+        -EnemyShip(String name, int hull, int crew, int cannons, int armour, int gold, int morale, int gain, int notoriety)
+        +merchant(int notoriety)$ EnemyShip
+        +pirate(int notoriety)$ EnemyShip
+        +coastGuard(int notoriety)$ EnemyShip
         +getGain() int
+        +describe() String
     }
 
     class Crew {
@@ -205,12 +180,8 @@ classDiagram
         +fight() String
         +flee() String
         +getEnemy() EnemyShip
-        +describe() String
     }
 
-    Describable <|.. Location
-    Describable <|.. Ship
-    Describable <|.. Encounter
     Game "1" *-- "1" CommandParser : each line
     CommandParser ..> Command : builds
     Game "1" *-- "1" ChannelMap : sail targets
@@ -223,6 +194,5 @@ classDiagram
     Ship <|-- EnemyShip
     Ship "1" *-- "1" Crew
     PlayerShip --> Location : current stop
-    EnemyShip --> EnemyType : base stats
     Encounter --> PlayerShip : damage, plunder
     Encounter "1" *-- "1" EnemyShip : opponent

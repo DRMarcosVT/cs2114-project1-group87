@@ -10,8 +10,6 @@ flowchart LR
     Ship["Ship (abstract)"]
     PlayerShip["PlayerShip"]
     EnemyShip["EnemyShip"]
-    EnemyType["EnemyType"]
-    Describable["Describable"]
     Crew["Crew"]
     Random(("Random"))
 
@@ -30,12 +28,9 @@ flowchart LR
     Game -- "fight / flee" --> Encounter
     Encounter -- "battle report" --> Game
     Encounter -- "damage, plunder" --> PlayerShip
-    Encounter -- "damage" --> EnemyShip
+    Encounter -- "notoriety, damage" --> EnemyShip
     PlayerShip -- "extends" --> Ship
     EnemyShip -- "extends" --> Ship
-    EnemyType -- "base stats" --> EnemyShip
-    Game -- "describe() call" --> Describable
-    Describable -. "implemented by Location, Ship, Encounter" .-> Encounter
     Ship -- "has one" --> Crew
     Crew -- "morale scales attack" --> Ship
     Random -. "one shared instance" .-> Encounter

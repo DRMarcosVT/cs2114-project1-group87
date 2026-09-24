@@ -134,7 +134,7 @@ public class Crew {
         return greed;
     }
 
-    private static int clamp(int value, int low, int high) {
+    static int clamp(int value, int low, int high) {
         return Math.max(low, Math.min(high, value));
     }
 

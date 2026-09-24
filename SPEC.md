@@ -16,15 +16,12 @@ CS 2114 Project 1, Deliverable 2 — Group 87 (Marcos Salas, Aidan McIlvenni)
 7. `Ship` (abstract): what both sides share, hull, cannons, armour, gold, rum and a
    `Crew`, plus the rules for dealing and taking damage.
 8. `PlayerShip`: where the player is, notoriety, ports visited, and every purchase.
-9. `EnemyShip`: a ship the player encounters, built from an `EnemyType` and the player's
+9. `EnemyShip`: a ship the player encounters, built by one of three static factories,
+   `merchant`, `pirate` and `coastGuard`, from that kind's base stats and the player's
    notoriety.
-10. `EnemyType`: the base stats for one kind of enemy, with three shared instances,
-    `MERCHANT`, `PIRATE` and `COAST_GUARD`, as `static final` constants.
-11. `Crew`: head count, morale and greed, and the rules that move them.
-12. `Encounter`: one meeting with an enemy, from the roll that creates it through the
+10. `Crew`: head count, morale and greed, and the rules that move them.
+11. `Encounter`: one meeting with an enemy, from the roll that creates it through the
     fight or the flight to the plunder.
-13. `Describable` (interface): `String describe()`, implemented by `Location`, `Ship` and
-    `Encounter`, so `Game` prints any of them the same way.
 
 Fixed values are `String` constants: kinds `Location.PORT`, `SEA_LANE`, `HIGH_SEAS`; nations `Port.ENGLISH`, `FRENCH`,
 `PIRATE`. The twelve verbs `look`, `status`, `sail`, `repair`, `hire`, `buy`, `bonus`,
@@ -71,10 +68,13 @@ those bounds, so no caller can drive it outside.
 - `ChannelMap`: final `HashMap<String, Location> stops`, the 18 stops keyed by the stop's
   name in lower case with a space between words, such as `dover boulogne`; `Port home`,
   Sark, where the player starts and retires. `ChannelMap.standard()` builds the game's
-  map: it puts the 18 stops into `stops`, keyed by the text the player types, with no
-  array of stops; it then calls `connect` once per link, and `connect` puts each of the
-  two stops into the other's `neighbours` array. It sets `home`, and nothing changes the
-  map after it returns. `sail` looks the typed key up in `stops`.
+  map from two local `String[][]` tables, `locations` (18 rows of key, name and nation or kind)
+  and `links` (25 pairs of keys): its private `add` puts one `Location` or `Port` per row
+  into `stops`, keyed by the text the player types; its private `connect` then runs once per link, looks the
+  two keys up and calls `Location.connect`, which puts each of the two stops into the
+  other's `neighbours` array. Both helpers are private because `standard()` is their only
+  caller. It sets `home`, and nothing changes the map after it returns. `sail` looks the
+  typed key up in `stops`.
 - `Location`: final `String key`, `name` and `kind`; final `int encounterPercent`, 0 for a
   port, 35 for a sea lane and 60 for the high seas *default*; final `Location[]
   neighbours` of `MAX_NEIGHBOURS = 4` slots and `int neighbourCount`, 2 to 4 once the map
@@ -92,15 +92,16 @@ those bounds, so no caller can drive it outside.
 - `PlayerShip` adds `Location location`, never null; `int notoriety`; `int portsVisited`;
   `static final int MAX_LEVEL = 5`. It starts *default* at Sark with hull 100, crew 20 at
   morale 70, cannons 1, armour 1, gold 200 and rum 30.
-- `EnemyShip` adds final `EnemyType type`. Its constructor takes the type's base numbers
-  and adds an amount set by the player's notoriety: 2 hull per point, 1 crew per 2 points
-  (capped at 40), 1 cannon and 1 armour per 10 points (each capped at 5), and 5 gold per
-  point. Rum starts equal to the crew count and morale comes from the type, so at
-  notoriety 10 a merchant has hull 60, crew 13, cannons 2, armour 1 and gold 200.
-- `EnemyType`: final `String name`, and final `int hull`, `crew`, `cannons`, `armour`,
-  `gold`, `morale` and `gain`. The three *default* constants, in that order: `MERCHANT`
-  40, 8, 1, 0, 150, 30, 1; `PIRATE` 60, 15, 2, 1, 100, 60, 2; `COAST_GUARD` 80, 20, 3, 2,
-  50, 80, 3.
+- `EnemyShip` adds final `int gain`, the notoriety a win over it pays. Each factory passes
+  its kind's name and *default* base numbers, in the order hull, crew, cannons, armour,
+  gold, morale, gain, to one private constructor: `merchant` "Merchant", 40, 8, 1, 0, 150,
+  30, 1; `pirate` "Pirate", 60, 15, 2, 1, 100, 60, 2; `coastGuard` "Coast guard", 80, 20,
+  3, 2, 50, 80, 3. The constructor adds an amount set by the player's notoriety: 2 hull
+  per point, 1 crew per 2 points (capped at 40), 1 cannon and 1 armour per 10 points (each
+  capped at 5), and 5 gold per point. Rum starts equal to the crew count and morale is the
+  base morale, so at notoriety 10 a merchant has hull 60, crew 13, cannons 2, armour 1 and
+  gold 200. Java requires `super(...)` to be a constructor's first statement, so the
+  constructor cannot choose base numbers with an `if`; the factories choose them.
 - `Crew`: `int count`, 0 to `MAX_COUNT = 40`; `int morale` and `int greed`, both 0 to 100,
   where greed starts at 0 and only the player's crew ever gains it. *Default* steps: each
   man lost costs 5 morale, each bottle of rum deficit costs
@@ -126,13 +127,13 @@ How the numbers move:
    crew mutinying stops its fire, printed as a surrender.
 4. A fight round: the player fires `attackStrength() + random.nextInt(ROLL_RANGE)`; if the
    enemy still stands it fires back the same way, and rounds repeat until one is defeated.
-   A win moves the enemy's gold and rum across, adds the type's gain to notoriety, and
+   A win moves the enemy's gold and rum across, adds the enemy's `getGain()` to notoriety, and
    calls `crew.onWin(gold)`.
 5. Each sail into a sea stop: the crew wants one bottle per ten men, a part-full ten
    rounding up, so 20 men want 2 and 21 want 3. It drinks what the hold has, and the rum
    deficit, bottles wanted minus bottles drunk, costs `MORALE_PER_DRY_BOTTLE` per bottle: 20 men with 1 bottle
    aboard drink it and lose 5 morale, and with an empty hold they lose 10. Then `roll`
-   draws `nextInt(100)` against the stop's chance, and a second draw picks the type: in a
+   draws `nextInt(100)` against the stop's chance, and a second draw picks the factory: in a
    sea lane below 70 is a merchant, else the coast guard; on the high seas below 50 is a
    pirate, else a merchant.
 6. A purchase buys the smallest of three numbers: the amount typed, how many units the
@@ -146,8 +147,8 @@ How the numbers move:
 that into the message the player sees. IAE means it throws `IllegalArgumentException`.
 
 `Game`: `Game(Scanner in, ChannelMap map, Random random)`; `static void main(String[]
-args)` builds a game on `System.in`, `ChannelMap.standard()` and `new Random()` and runs
-it; `void run()` prints the opening scene and loops read, parse, dispatch, print while
+args)` builds a game on `System.in`, `ChannelMap.standard()` and `new Random()`, or
+`new Random(seed)` when a number is given as the first argument, and runs it; `void run()` prints the opening scene and loops read, parse, dispatch, print while
 `running` is true; `String dispatch(Command c)` applies one command and returns the text
 to print, and when the command sinks the ship, mutinies the crew, retires the player or
 confirms `quit`, it sets `running` to false and ends its text with how the run ended, the
@@ -165,13 +166,11 @@ for anything else.
 getVerb()`; `String getArgument()`; `String getWord(int i)` gives the i-th argument word
 or `""`; `String toString()` gives "sail dover".
 
-`ChannelMap`: `static ChannelMap standard()` adds the 18 stops and calls `connect` for
-each of the 25 links; `void add(Location stop)` puts a stop into `stops`, IAE on a
-duplicate key; `void connect(String keyA, String keyB)` looks both keys up in `stops` and
-calls `Location.connect`, IAE on an unknown key; `Location find(String name)` gives the stop or
-null; `Port getHome()`.
+`ChannelMap`: `static ChannelMap standard()` adds the 18 stops and connects each of the
+25 links through its private helpers `add` and `connect`; `Location find(String name)`
+gives the stop or null; `Port getHome()`.
 
-`Location` implements `Describable`: `Location(String key, String name, String kind, int
+`Location`: `Location(String key, String name, String kind, int
 encounterPercent)`; `void connect(Location other)` adds each to the other once, IAE on
 itself or when either already has 4; `boolean isNextTo(Location other)`; `String
 neighbourList()` gives the neighbours' keys joined by commas, such as "barfleur sark, west
@@ -180,7 +179,7 @@ name, String nation)` passes kind `PORT` and chance 0 upward; `String getNation(
 rumPrice()`, halved at Sark; `int upgradePrice(int nextLevel)`; `describe()` adds the
 prices.
 
-`Ship` implements `Describable`: `Ship(String name, int maxHull, int cannons, int armour,
+`Ship`: `Ship(String name, int maxHull, int cannons, int armour,
 Crew crew, int gold, int rum)`; `int attackStrength()`; `int takeDamage(int raw)` returns hull lost; `boolean
 isDefeated()`; `void addGold(int)`; `void spendGold(int)`, IAE beyond what is held; `void
 addRum(int)`; `int takeRum(int)` returns bottles taken, capped at the hold; `Crew
@@ -195,10 +194,11 @@ upgradeCannons(int price)` and `boolean upgradeArmour(int price)` refuse at `MAX
 without the gold; `boolean payBonus(int gold)` refuses beyond what is held, else hands the
 gold to the crew; `void addNotoriety(int)`; getters; `describe()` is the `status` report.
 
-`EnemyShip`: `EnemyShip(EnemyType type, int notoriety)`, IAE on null or a negative;
-`EnemyType getType()`; `describe()` is what the lookout sees. `EnemyType`: a private constructor
-taking one value per field, and a getter per field; the three constants are its
-only instances.
+`EnemyShip`: `static EnemyShip merchant(int notoriety)`, `static EnemyShip pirate(int
+notoriety)` and `static EnemyShip coastGuard(int notoriety)` each return a new ship of
+that kind, IAE on a negative notoriety; the constructor is private, so the factories are
+the only way to build one; `int getGain()`; `describe()` is what the lookout sees, and
+what `look` prints during a meeting.
 
 `Crew`: `Crew(int count, int morale)` caps both; `int lose(int men)` and `int hire(int
 men)` return the number removed or added after capping; `double moraleFactor()`; `int
@@ -207,18 +207,16 @@ drink(int bottlesAvailable)` returns bottles drunk and charges morale for the ru
 onWin(int plunder)`; `void onFlee()`; `void receiveBonus(int gold)`; `boolean mutinied()`;
 getters.
 
-`Encounter` implements `Describable`. Every random decision in a meeting is a draw from the
+`Encounter`: every random decision in a meeting is a draw from the
 `Random` passed in, the one `main` creates, so a test that passes a `FixedRandom` fixes
 each outcome. `Encounter(PlayerShip player, EnemyShip enemy, Random random)` keeps
 `random` for the damage rolls; `static Encounter roll(Location where, PlayerShip player,
-Random random)` draws whether an encounter happens and which `EnemyType` appears, builds
-`new EnemyShip(type, player.getNotoriety())` and returns a new encounter, or null when
-none happens; `String fight()` resolves the whole battle, adding a `random` draw to every
+Random random)` draws whether an encounter happens and which factory to call, passes it
+`player.getNotoriety()` and returns a new encounter, or null when none happens; `String fight()` resolves the whole battle, adding a `random` draw to every
 shot, and returns the narration; `String flee()` calls
 `player.takeDamage(FLEE_DAMAGE)`, then `crew.onFlee()`, which takes 15 morale, and returns
-the text to print; `EnemyShip getEnemy()` returns the ship being fought, so `Game` and the
-tests can read its type, hull and crew; `String describe()` returns what `look` prints
-during the meeting which is the enemy ship's own `describe()`.
+the text to print; `EnemyShip getEnemy()` returns the ship being fought, so `Game` can
+print its `describe()` for `look` and the tests can read its name, hull and crew.
 
 ## 5. Where validation lives
 
@@ -270,8 +268,8 @@ also need the player's stop to be a port.
   throws IAE, and given a blank line, then `sial`, then no more lines, `run` prints the
   unknown-command reply and "input ended" without throwing.
 - `dispatch`, normal: `sail barfleur sark` reaches the lane with rum 28; `hire 5` gives
-  crew 25 and gold 125; with `FixedRandom(0)`, a `Random` that always rolls 0, `fight` at the lane ends with gold 350 and
-  no encounter; `retire` on 1000 gold ends the game; `look` prints the stop name, `status` "Morale 70",
+  crew 25 and gold 125; with `FixedRandom(0)`, a `Random` whose `nextInt` returns the given values in turn, `fight` at the lane
+  ends with gold 350 and no encounter; `retire` on 1000 gold ends the game; `look` prints the stop name, `status` "morale 70",
   and `help` every template.
 
 `CommandParser` and `Command`:
@@ -287,9 +285,7 @@ also need the player's stop to be a port.
 `ChannelMap`, `Location` and `Port`:
 
 - `ChannelMap.standard()`: a map of 18 stops with home `sark`, every link recorded on both
-  stops.
-- `ChannelMap.add`: a duplicate key throws IAE.
-- `ChannelMap.connect`: `connect("dover", "atlantis")` throws IAE.
+  stops, which also exercises the private `add` and `connect`.
 - `ChannelMap.find`: `dover boulogne` gives the lane; `dover now please`, `dover-boulogne`,
   `atlantis`, `help` and `dövér` give null.
 - `Location(...)`: a lane built with chance 35 reports 35.
@@ -323,7 +319,11 @@ also need the player's stop to be a port.
   true, leaving level 2 and gold 0; at level 5 or with 50 gold, either returns false.
 - `PlayerShip.payBonus`: `payBonus(100)` after `onWin(600)` gives greed 25 and morale 82;
   `payBonus(500)` returns false.
-- `EnemyType` getters: `MERCHANT.getGain()` gives 1 and `COAST_GUARD.getGain()` gives 3.
+- `EnemyShip.merchant`, `pirate` and `coastGuard`: `merchant(10)` has hull 60, crew 13,
+  cannons 2, armour 1, gold 200, rum 13 and morale 30; `pirate(0)` has hull 60 and
+  `coastGuard(0)` hull 80; each throws IAE for a notoriety of -1.
+- `EnemyShip.getGain`: 1 for a merchant, 2 for a pirate, 3 for the coast guard.
+- `EnemyShip.describe`: `merchant(0)`'s text names a merchant.
 
 `Crew` and `Encounter`:
 
@@ -333,20 +333,20 @@ also need the player's stop to be a port.
 - `Crew.onFlee`: morale 70 drops to 55.
 - `Crew.receiveBonus`: 100 gold after `onWin(600)` gives greed 25 and morale 82.
 - `Encounter(...)`: a null enemy throws IAE.
-- `Encounter.roll`: a sea lane with `FixedRandom(0)` gives a merchant encounter; a port, or
-  the high seas with `FixedRandom(99)`, gives null.
-- `Encounter.describe`: the merchant encounter's text names a merchant.
+- `Encounter.roll` and `getEnemy`: a sea lane with `FixedRandom(0)` gives an encounter
+  whose `getEnemy().getName()` is "Merchant", and with `FixedRandom(34, 70)` a coast guard;
+  the high seas with `FixedRandom(0)` give a pirate; a port, or the high seas with
+  `FixedRandom(99)`, gives null.
 - `Encounter.fight`: against that merchant, the enemy surrenders in round 3, leaving hull 97,
   gold 350, rum 38, morale 80 and greed 7; after `setHull(5)`, a fight against
-  `(PIRATE, 0)` is lost in round 1 with gold still 200.
+  `EnemyShip.pirate(0)` is lost in round 1 with gold still 200.
 - `Encounter.flee`: a fresh player is left with hull 92, crew 19 and morale 50; after
   `setHull(5)`, the hull is emptied.
 
 ## 7. Provisional Division of work
 
-Aidan owns `CommandParser`, `Command`, `Ship`, `PlayerShip`, `EnemyShip`, `EnemyType`,
-`Crew` and `Encounter`; Marcos owns `Game`, `ChannelMap`, `Location`, `Port` and
-`Describable`, sets the *default* numbers, and reworks the classes
+Aidan owns `CommandParser`, `Command`, `Ship`, `PlayerShip`, `EnemyShip`, `Crew` and
+`Encounter`; Marcos owns `Game`, `ChannelMap`, `Location` and `Port`, sets the *default* numbers, and reworks the classes
 toward Aidan's suggestion that combat feel "gambly". On day one we write every class with
 its method signatures and stub bodies, so the project compiles and each of us edits
 only our own files. Marcos merges each class into `main` with its test class at the
@@ -359,6 +359,8 @@ week 2.
 The below revisions were a product of group discussion.
 
 1. Crew morale, greed, and rum went from being a stretch goal to an integral part of the deliverable.
-2. An abstract `Ship` shared by both sides, with enemies scaled by `EnemyType` and
-   notoriety. This makes the player's ship and the enemy ships birds of a feather instead of different classes with different rules, making combat simpler to code.
+2. An abstract `Ship` shared by both sides, with enemies built by the three `EnemyShip`
+   factories and scaled by notoriety. This makes the player's ship and the enemy ships birds of a feather instead of different classes with different rules, making combat simpler to code.
 3. Buying more than you can afford now empties your treasury instead of throwing or stopping you. Command strings are also not normalised, the player knows what they can and cannot type, if they don't do so, they can't play, this removes the hurdle of string normalisation.
+4. `main` takes an optional seed argument, so a demo or a grader can replay the same voyage; `docs/demo.txt` is the seed 3 transcript. Own reflection while writing the presentation.
+5. `EnemyType` and `Describable` were removed and `ChannelMap.add` and `connect` made private (see §1), which took the class count from 13 to 11 and removed twelve public methods from the test plan. Group discussion with GenAI probing.
