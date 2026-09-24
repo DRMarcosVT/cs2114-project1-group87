@@ -63,8 +63,8 @@ public class Game {
     }
 
     /**
-     * Prints a reply between two lines of equals signs, so each reply stands apart from
-     * what the player typed.
+     * Print output prettier. Prints a reply between two lines of equals signs, so each reply stands apart from
+     * what the player typed. 
      *
      * @param reply the text to print
      */
@@ -74,10 +74,12 @@ public class Game {
     }
 
     /**
-     * Carries out one command and returns the reply. It first handles a pending quit, a
+     * Middle-man between player input and the game. Carries out one command and returns the reply. It first handles a pending quit, a
      * blank line and an unknown verb; then refuses fight and flee with no enemy, sail during
      * a fight, and trading away from a port; then returns the command's template when a
      * required argument is missing; and only then runs the command.
+     * 
+     * 
      *
      * @param command the verb and argument the player typed
      * @return the text to print, ending with how the game ended if this command ended it

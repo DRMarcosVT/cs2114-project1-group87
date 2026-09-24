@@ -10,10 +10,17 @@ classDiagram
         -Encounter encounter
         -Random random
         -boolean running
+        -boolean confirmingQuit
         +Game(Scanner in, ChannelMap map, Random random)
         +main(String[] args)$ void
         +run() void
+        -show(String reply)$ void
         +dispatch(Command command) String
+        -sail(String name) String
+        -buy(Command command) String
+        -retire() String
+        -outcome() String
+        -end(String how) String
         +isRunning() boolean
         +getPlayer() PlayerShip
         +getEncounter() Encounter
@@ -35,10 +42,12 @@ classDiagram
         +Command(String verb, String argument)
         +getVerb() String
         +getArgument() String
-        +getWord(int index) String
+        +getWord(int i) String
     }
 
     class ChannelMap {
+        -int SEA_LANE_CHANCE$
+        -int HIGH_SEAS_CHANCE$
         -HashMap~String, Location~ stops
         +ChannelMap()
         +find(String name) Location
@@ -61,12 +70,12 @@ classDiagram
         +connect(Location other) void
         +isNextTo(Location other) boolean
         +neighbourList() String
+        +describe() String
         +getKey() String
         +getName() String
         +getKind() String
         +getEncounterPercent() int
         +getDescription() String
-        +describe() String
     }
 
     class Port {
@@ -98,6 +107,9 @@ classDiagram
         +spendGold(int amount) void
         +addRum(int bottles) void
         +takeRum(int bottles) int
+        ~setHull(int value) void
+        ~setCannons(int value) void
+        ~setArmour(int value) void
         +getName() String
         +getHull() int
         +getMaxHull() int
@@ -106,9 +118,6 @@ classDiagram
         +getGold() int
         +getRum() int
         +getCrew() Crew
-        #setHull(int hull) void
-        #setCannons(int cannons) void
-        #setArmour(int armour) void
         +describe()* String
     }
 
@@ -119,6 +128,7 @@ classDiagram
         -int portsVisited
         +PlayerShip(String name, Port home)
         +moveTo(Location destination) void
+        -buy(int asked, int price, int room) int
         +repair(int points, int pricePerPoint) int
         +hire(int men, int pricePerMan) int
         +buyRum(int bottles, int pricePerBottle) int
@@ -136,6 +146,7 @@ classDiagram
         -int notorietyGain
         -String description
         -EnemyShip(String name, String description, int baseHull, int baseCrew, int baseCannons, int baseArmour, int baseGold, int morale, int notorietyForWin, int notoriety)
+        -check(int notoriety)$ int
         +merchant(int notoriety)$ EnemyShip
         +pirate(int notoriety)$ EnemyShip
         +coastGuard(int notoriety)$ EnemyShip
@@ -145,7 +156,13 @@ classDiagram
 
     class Crew {
         +int MAX_COUNT$
+        +int MAX_STAT$
         +int MORALE_PER_DRY_BOTTLE$
+        +int MORALE_PER_MAN_LOST$
+        +int WIN_MORALE$
+        +int FLEE_MORALE$
+        +int GOLD_PER_GREED$
+        +int MEN_PER_BOTTLE$
         -int count
         -int morale
         -int greed
@@ -178,9 +195,12 @@ classDiagram
 
     Game "1" *-- "1" CommandParser : each line
     CommandParser ..> Command : builds
+    Game ..> Command : verb, argument
     Game "1" *-- "1" ChannelMap : sail targets
     Game "1" *-- "1" PlayerShip : player
     Game "1" o-- "0..1" Encounter : current fight
+    Game ..> Port : prices
+    Game ..> Crew : rum ration, mutiny check
     ChannelMap "1" *-- "18" Location : stops by key
     Location "1" --> "2..4" Location : neighbours
     Location <|-- Port
@@ -188,5 +208,6 @@ classDiagram
     Ship <|-- EnemyShip
     Ship "1" *-- "1" Crew
     PlayerShip --> Location : current stop
+    Encounter ..> Location : encounter chance
     Encounter --> PlayerShip : damage, plunder
     Encounter "1" *-- "1" EnemyShip : opponent
