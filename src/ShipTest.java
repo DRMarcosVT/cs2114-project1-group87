@@ -199,6 +199,9 @@ public class ShipTest {
         assertEquals(5, EnemyShip.coastGuard(100).getCannons());
         assertEquals(40, EnemyShip.coastGuard(100).getCrew().getCount());
         assertTrue(EnemyShip.merchant(0).describe().contains("Merchant"));
+        assertTrue(EnemyShip.merchant(0).describe().contains("wine casks"));
+        assertTrue(EnemyShip.pirate(0).describe().contains("no banner"));
+        assertTrue(EnemyShip.coastGuard(0).describe().contains("three lions"));
         assertThrows(IllegalArgumentException.class, () -> EnemyShip.merchant(-1));
         assertThrows(IllegalArgumentException.class, () -> EnemyShip.pirate(-1));
         assertThrows(IllegalArgumentException.class, () -> EnemyShip.coastGuard(-1));

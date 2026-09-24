@@ -57,9 +57,9 @@ public abstract class Ship {
         return taken;
     }
 
-    void setHull(int value) { hull = Crew.clamp(value, 0, maxHull); }
-    void setCannons(int value) { cannons = Crew.clamp(value, 1, 5); }
-    void setArmour(int value) { armour = Crew.clamp(value, 0, 5); }
+    void setHull(int value) { hull = Math.max(0, Math.min(maxHull, value)); }
+    void setCannons(int value) { cannons = Math.max(1, Math.min(5, value)); }
+    void setArmour(int value) { armour = Math.max(0, Math.min(5, value)); }
 
     public String getName() { return name; }
     public int getHull() { return hull; }

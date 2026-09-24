@@ -54,9 +54,10 @@ classDiagram
         -String name
         -String kind
         -int encounterPercent
+        -String description
         -Location[] neighbours
         -int neighbourCount
-        +Location(String key, String name, String kind, int encounterPercent)
+        +Location(String key, String name, String kind, int encounterPercent, String description)
         +connect(Location other) void
         +isNextTo(Location other) boolean
         +neighbourList() String
@@ -64,20 +65,16 @@ classDiagram
         +getName() String
         +getKind() String
         +getEncounterPercent() int
+        +getDescription() String
         +describe() String
     }
 
     class Port {
-        +String ENGLISH$
-        +String FRENCH$
-        +String PIRATE$
         +int REPAIR_PRICE$
         +int HIRE_PRICE$
         +int RUM_PRICE$
         +int UPGRADE_PRICE$
-        -String nation
-        +Port(String key, String name, String nation)
-        +getNation() String
+        +Port(String key, String name, String description)
         +rumPrice() int
         +upgradePrice(int nextLevel) int
         +describe() String

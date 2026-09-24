@@ -93,9 +93,9 @@ abstract, so `ShipTest` tests the base class through a two-line anonymous subcla
 
 1. No Javadoc while writing (see §0).
 2. Every getter is one line. Every `describe()` is one `return String.format(...)`.
-3. One clamp helper, `static int clamp(int v, int lo, int hi) { return Math.max(lo, Math.min(hi, v)); }`, in `Crew`; `Ship`'s setters call `Crew.clamp`.
+3. Bounds are applied inline with `Math.max` and `Math.min`; there is no clamp helper.
 4. Every IAE is one line, no message: `if (raw < 0) throw new IllegalArgumentException();`. No test reads a message.
-5. `Ship`'s setters and `Crew.clamp` are package-private (no modifier): shorter than `protected`, and the tests in the same package can call `setHull(5)`.
+5. `Ship`'s setters are package-private (no modifier): shorter than `protected`, and the tests in the same package can call `setHull(5)`.
 6. Nothing beyond §4: no `equals`, no `hashCode`, no `toString`, no interface, no getter that neither `Game` nor a test reads.
 7. A `switch` case in `dispatch` longer than four lines becomes a private method; shorter ones stay inline.
 8. Strings the player sees are literals at the point of use. No message constants, no message class.
@@ -126,7 +126,7 @@ About 20 lines.
 
 - `connect(other)`: one IAE line for `other == this || neighbourCount == MAX_NEIGHBOURS || other.neighbourCount == MAX_NEIGHBOURS`; `if (isNextTo(other)) return;`; two array writes with `++`.
 - `isNextTo(other)`: loop to `neighbourCount`, `==` comparison.
-- `neighbourList()`: `StringBuilder`, keys joined by `", "`, in connection order. The Sark test expects `"barfleur sark, west channel"`, which the link order in `ChannelMap` guarantees.
+- `neighbourList()`: a `String` built with `+=`, keys joined by `", "`, in connection order. The Sark test expects `"barfleur sark, west channel"`, which the link order in `ChannelMap` guarantees.
 - `describe()`: name, kind, `neighbourList()`.
 
 ### Tier 1
@@ -148,7 +148,7 @@ with newlines.
 - `takeDamage(raw)`: IAE negative; `through = raw == 0 ? 0 : Math.max(1, raw - 2 * armour)`; `lost = Math.min(hull, through)`; `hull -= lost`; `crew.lose(through / 5)`; return `lost`.
 - `isDefeated()`: `hull == 0 || crew.getCount() == 0 || crew.mutinied()`.
 - `spendGold(n)`: IAE on `n < 0 || n > gold`. `addGold`, `addRum`: IAE negative. `takeRum(n)`: IAE negative; `taken = Math.min(n, rum)`; return `taken`.
-- Package-private `setHull`, `setCannons`, `setArmour` through `Crew.clamp` with the §3 bounds.
+- Package-private `setHull`, `setCannons`, `setArmour`, each bounded with `Math.max`/`Math.min` to the §3 limits.
 
 ### Tier 2
 

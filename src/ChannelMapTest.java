@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 public class ChannelMapTest {
 
-    private static Location lane(String key) { return new Location(key, key, Location.SEA_LANE, 35); }
+    private static Location lane(String key) { return new Location(key, key, Location.SEA_LANE, 35, "Open water."); }
 
     @Test
     public void locationHoldsItsFields() {
@@ -36,9 +36,9 @@ public class ChannelMapTest {
 
     @Test
     public void neighbourListKeepsConnectionOrder() {
-        Port sark = new Port("sark", "Sark", Port.PIRATE);
+        Port sark = new Port("sark", "Sark", "A harbour.");
         sark.connect(lane("barfleur sark"));
-        sark.connect(new Location("west channel", "West Channel", Location.HIGH_SEAS, 60));
+        sark.connect(new Location("west channel", "West Channel", Location.HIGH_SEAS, 60, "Open sea."));
         assertEquals("barfleur sark, west channel", sark.neighbourList());
         assertTrue(sark.describe().contains("barfleur sark, west channel"));
     }
@@ -56,8 +56,11 @@ public class ChannelMapTest {
         assertEquals(35, lane.getEncounterPercent());
         assertTrue(lane.isNextTo(map.find("dover")) && map.find("dover").isNextTo(lane));
         assertTrue(lane.isNextTo(map.find("boulogne")));
+        assertTrue(lane.describe().contains("shortest crossing"));
+        assertTrue(map.getHome().describe().contains("Cliffs on every side"));
+        for (String key : keys) assertFalse(map.find(key).getDescription().isEmpty(), key);
         assertEquals(60, map.find("mid channel").getEncounterPercent());
-        assertEquals(Port.FRENCH, ((Port) map.find("dieppe")).getNation());
+        assertEquals(Location.PORT, map.find("dieppe").getKind());
     }
 
     @Test
@@ -71,15 +74,15 @@ public class ChannelMapTest {
 
     @Test
     public void portPricesAndDescription() {
-        Port dover = new Port("dover", "Dover", Port.ENGLISH);
-        Port sark = new Port("sark", "Sark", Port.PIRATE);
+        Port dover = new Port("dover", "Dover", "A harbour.");
+        Port sark = new Port("sark", "Sark", "A harbour.");
         assertEquals(Location.PORT, dover.getKind());
         assertEquals(0, dover.getEncounterPercent());
-        assertEquals(Port.ENGLISH, dover.getNation());
         assertEquals(4, dover.rumPrice());
         assertEquals(2, sark.rumPrice());
         assertEquals(200, dover.upgradePrice(2));
         assertTrue(dover.describe().contains("rum 4"));
         assertTrue(dover.describe().contains("Dover"));
+        assertTrue(dover.describe().contains("A harbour."));
     }
 }

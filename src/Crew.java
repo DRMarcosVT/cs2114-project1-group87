@@ -17,14 +17,18 @@ public class Crew {
     private int greed;
 
     /**
-     * Caps both values; greed starts at 0.
+     * Greed starts at 0.
      *
-     * @param count  head count
-     * @param morale starting morale
+     * @param count  head count, 0 to MAX_COUNT
+     * @param morale starting morale, 0 to MAX_STAT
+     * @throws IllegalArgumentException if either is out of range
      */
     public Crew(int count, int morale) {
-        this.count = clamp(count, 0, MAX_COUNT);
-        this.morale = clamp(morale, 0, MAX_STAT);
+        if (count < 0 || count > MAX_COUNT || morale < 0 || morale > MAX_STAT) {
+            throw new IllegalArgumentException();
+        }
+        this.count = count;
+        this.morale = morale;
         this.greed = 0;
     }
 
@@ -37,10 +41,12 @@ public class Crew {
      * @throws IllegalArgumentException on a negative
      */
     public int lose(int men) {
-        requireNonNegative(men);
+        if (men < 0) {
+            throw new IllegalArgumentException();
+        }
         int removed = Math.min(men, count);
         count -= removed;
-        morale = clamp(morale - removed * MORALE_PER_MAN_LOST, 0, MAX_STAT);
+        morale = Math.max(0, morale - removed * MORALE_PER_MAN_LOST);
         return removed;
     }
 
@@ -50,7 +56,9 @@ public class Crew {
      * @throws IllegalArgumentException on a negative
      */
     public int hire(int men) {
-        requireNonNegative(men);
+        if (men < 0) {
+            throw new IllegalArgumentException();
+        }
         int added = Math.min(men, MAX_COUNT - count);
         count += added;
         return added;
@@ -73,11 +81,13 @@ public class Crew {
      * @throws IllegalArgumentException on a negative
      */
     public int drink(int bottlesAvailable) {
-        requireNonNegative(bottlesAvailable);
+        if (bottlesAvailable < 0) {
+            throw new IllegalArgumentException();
+        }
         int wanted = (count + MEN_PER_BOTTLE - 1) / MEN_PER_BOTTLE;
         int drunk = Math.min(wanted, bottlesAvailable);
         int deficit = wanted - drunk;
-        morale = clamp(morale - deficit * MORALE_PER_DRY_BOTTLE, 0, MAX_STAT);
+        morale = Math.max(0, morale - deficit * MORALE_PER_DRY_BOTTLE);
         return drunk;
     }
 
@@ -88,14 +98,16 @@ public class Crew {
      * @throws IllegalArgumentException on a negative
      */
     public void onWin(int plunder) {
-        requireNonNegative(plunder);
-        morale = clamp(morale + WIN_MORALE, 0, MAX_STAT);
-        greed = clamp(greed + plunder / GOLD_PER_GREED, 0, MAX_STAT);
+        if (plunder < 0) {
+            throw new IllegalArgumentException();
+        }
+        morale = Math.min(MAX_STAT, morale + WIN_MORALE);
+        greed = Math.min(MAX_STAT, greed + plunder / GOLD_PER_GREED);
     }
 
     /** Takes FLEE_MORALE morale. */
     public void onFlee() {
-        morale = clamp(morale - FLEE_MORALE, 0, MAX_STAT);
+        morale = Math.max(0, morale - FLEE_MORALE);
     }
 
     /**
@@ -106,13 +118,15 @@ public class Crew {
      * @throws IllegalArgumentException on a negative
      */
     public void receiveBonus(int gold) {
-        requireNonNegative(gold);
+        if (gold < 0) {
+            throw new IllegalArgumentException();
+        }
         if (count == 0) {
             return;
         }
         int perMan = gold / count;
-        greed = clamp(greed - perMan, 0, MAX_STAT);
-        morale = clamp(morale + perMan / 2, 0, MAX_STAT);
+        greed = Math.max(0, greed - perMan);
+        morale = Math.min(MAX_STAT, morale + perMan / 2);
     }
 
     /**
@@ -132,15 +146,5 @@ public class Crew {
 
     public int getGreed() {
         return greed;
-    }
-
-    static int clamp(int value, int low, int high) {
-        return Math.max(low, Math.min(high, value));
-    }
-
-    private static void requireNonNegative(int n) {
-        if (n < 0) {
-            throw new IllegalArgumentException("negative: " + n);
-        }
     }
 }

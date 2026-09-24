@@ -6,11 +6,13 @@ public class CrewTest {
     private final Crew crew = new Crew(20, 70);
 
     @Test
-    public void constructorCaps() {
-        Crew big = new Crew(100, 150);
-        assertEquals(Crew.MAX_COUNT, big.getCount());
-        assertEquals(100, big.getMorale());
-        assertEquals(0, new Crew(-3, -3).getCount());
+    public void constructorRejectsOutOfRange() {
+        assertEquals(40, new Crew(40, 100).getCount());
+        assertEquals(0, new Crew(0, 0).getMorale());
+        assertThrows(IllegalArgumentException.class, () -> new Crew(41, 50));
+        assertThrows(IllegalArgumentException.class, () -> new Crew(-1, 50));
+        assertThrows(IllegalArgumentException.class, () -> new Crew(20, 101));
+        assertThrows(IllegalArgumentException.class, () -> new Crew(20, -1));
     }
 
     @Test

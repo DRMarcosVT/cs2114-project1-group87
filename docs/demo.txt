@@ -6,11 +6,11 @@ Seed 3 gives a merchant on the first sail. Lines starting with > are typed.
 
 ============================================================
 You are Eustace the Monk, moored at Sark with 200 gold. Retire here with 1000 gold to win. Type help for the commands.
-Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+Sark, port. Cliffs on every side, and a single cleft in them where a boat can land. Your crew keeps a fire burning on the cliff top. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
 ============================================================
 > look
 ============================================================
-Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+Sark, port. Cliffs on every side, and a single cleft in them where a boat can land. Your crew keeps a fire burning on the cliff top. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
 ============================================================
 > status
 ============================================================
@@ -18,8 +18,8 @@ Hull 100/100. Crew 20, morale 70, greed 0. Cannons 1, armour 1. Rum 30. Gold 200
 ============================================================
 > sail barfleur sark
 ============================================================
-Barfleur-Sark run, sea lane. You can sail to: barfleur, sark.
-Sail ho! A Merchant: hull 40, 8 men, 1 cannons, armour 0. Fight or flee?
+Barfleur-Sark run, sea lane. West past the cape of La Hague, where the tide race between the cape and Alderney runs faster than a ship can row. You can sail to: barfleur, sark.
+Sail ho! A Merchant. A round-bellied cog rides low in the water under one square sail, her hold stacked with wine casks from Gascony. A handful of sailors run along her deck, and the master is already shouting at them to get the boy up the mast. Hull 40, 8 men, 1 cannons, armour 0. Fight or flee?
 ============================================================
 > fight
 ============================================================
@@ -34,7 +34,7 @@ Hull 96/100. Crew 20, morale 80, greed 7. Cannons 1, armour 1. Rum 36. Gold 350.
 ============================================================
 > sail barfleur
 ============================================================
-Barfleur, French port. You can sail to: barfleur dieppe, barfleur sark, southampton barfleur, west channel. Repair 2 gold a point, hire 15 a man, rum 4 a bottle, upgrades 100 times the level.
+Barfleur, port. The harbour English kings sailed from to reach Normandy until the French took the duchy in 1204. Off the point lies the rock where the White Ship sank with the king's heir in 1120. You can sail to: barfleur dieppe, barfleur sark, southampton barfleur, west channel. Repair 2 gold a point, hire 15 a man, rum 4 a bottle, upgrades 100 times the level.
 ============================================================
 > repair 10
 ============================================================
@@ -50,11 +50,11 @@ Bought 10 bottles.
 ============================================================
 > sail barfleur sark
 ============================================================
-Barfleur-Sark run, sea lane. You can sail to: barfleur, sark.
+Barfleur-Sark run, sea lane. West past the cape of La Hague, where the tide race between the cape and Alderney runs faster than a ship can row. You can sail to: barfleur, sark.
 ============================================================
 > sail sark
 ============================================================
-Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+Sark, port. Cliffs on every side, and a single cleft in them where a boat can land. Your crew keeps a fire burning on the cliff top. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
 ============================================================
 > bonus 50
 ============================================================
@@ -77,7 +77,7 @@ Bad input to show, from a fresh game at Sark:
 
 ============================================================
 You are Eustace the Monk, moored at Sark with 200 gold. Retire here with 1000 gold to win. Type help for the commands.
-Sark, pirate port. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
+Sark, port. Cliffs on every side, and a single cleft in them where a boat can land. Your crew keeps a fire burning on the cliff top. You can sail to: barfleur sark, west channel. Repair 2 gold a point, hire 15 a man, rum 2 a bottle, upgrades 100 times the level.
 ============================================================
 > sial
 ============================================================

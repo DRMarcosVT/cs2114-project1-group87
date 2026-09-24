@@ -12,7 +12,7 @@ CS 2114 Project 1, Deliverable 2 — Group 87 (Marcos Salas, Aidan McIlvenni)
 4. `ChannelMap`: builds the fixed 18-stop map and calculates a stop from the name typed.
 5. `Location`: one stop, with its key, name, kind, encounter chance and the stops one
    move away.
-6. `Port`: a `Location` where the ship moors, with its nation and prices.
+6. `Port`: a `Location` where the ship moors, with its prices.
 7. `Ship` (abstract): what both sides share, hull, cannons, armour, gold, rum and a
    `Crew`, plus the rules for dealing and taking damage.
 8. `PlayerShip`: where the player is, notoriety, ports visited, and every purchase.
@@ -23,8 +23,7 @@ CS 2114 Project 1, Deliverable 2 — Group 87 (Marcos Salas, Aidan McIlvenni)
 11. `Encounter`: one meeting with an enemy, from the roll that creates it through the
     fight or the flight to the plunder.
 
-Fixed values are `String` constants: kinds `Location.PORT`, `SEA_LANE`, `HIGH_SEAS`; nations `Port.ENGLISH`, `FRENCH`,
-`PIRATE`. The twelve verbs `look`, `status`, `sail`, `repair`, `hire`, `buy`, `bonus`,
+Fixed values are `String` constants: kinds `Location.PORT`, `SEA_LANE`, `HIGH_SEAS`. The twelve verbs `look`, `status`, `sail`, `repair`, `hire`, `buy`, `bonus`,
 `fight`, `flee`, `retire`, `help` and `quit` are the keys of `CommandParser.templates`.
 
 Both sides fight by the same rules, so `Encounter` calls
@@ -73,13 +72,14 @@ those bounds, so no caller can drive it outside.
   `stops.get(a).connect(stops.get(b))`, and `Location.connect` puts each of the two stops into the
   other's `neighbours` array. Nothing changes the map after the constructor returns. `sail` looks the
   typed key up in `stops`.
-- `Location`: final `String key`, `name` and `kind`; final `int encounterPercent`, 0 for a
+- `Location`: final `String key`, `name`, `kind` and `description`, the sentence or two
+  `describe()` prints on arrival; final `int encounterPercent`, 0 for a
   port, 35 for a sea lane and 60 for the high seas *default*; final `Location[]
   neighbours` of `MAX_NEIGHBOURS = 4` slots and `int neighbourCount`, 2 to 4 once the map
   is built, where if A lists B then B lists A, and a stop never lists itself or a
   duplicate. No method hands the array out, so only `connect` can add a link, and
   `neighbourList()` gives the neighbours' keys in the order they were connected.
-- `Port` adds final `String nation` and the *default* prices `REPAIR_PRICE = 2`,
+- `Port` adds no fields, only the *default* prices `REPAIR_PRICE = 2`,
   `HIRE_PRICE = 15`, `RUM_PRICE = 4` and `UPGRADE_PRICE = 100` gold per unit, with level n
   costing `UPGRADE_PRICE × n`.
 - `Ship`: final `String name`; `int hull`, 0 to `maxHull`; final `int maxHull`; `int
@@ -90,7 +90,8 @@ those bounds, so no caller can drive it outside.
 - `PlayerShip` adds `Location location`, never null; `int notoriety`; `int portsVisited`;
   `static final int MAX_LEVEL = 5`. It starts *default* at Sark with hull 100, crew 20 at
   morale 70, cannons 1, armour 1, gold 200 and rum 30.
-- `EnemyShip` adds final `int gain`, the notoriety a win over it pays. Each factory passes
+- `EnemyShip` adds final `int gain`, the notoriety a win over it pays, and final `String
+  description`, the lookout's view of the ship, which `describe()` prints before the numbers. Each factory passes
   its kind's name and *default* base numbers, in the order hull, crew, cannons, armour,
   gold, morale, gain, to one private constructor: `merchant` "Merchant", 40, 8, 1, 0, 150,
   30, 1; `pirate` "Pirate", 60, 15, 2, 1, 100, 60, 2; `coastGuard` "Coast guard", 80, 20,
@@ -169,11 +170,11 @@ or `""`.
 gives the stop or null; `Port getHome()`.
 
 `Location`: `Location(String key, String name, String kind, int
-encounterPercent)`; `void connect(Location other)` adds each to the other once, IAE on
+encounterPercent, String description)`; `void connect(Location other)` adds each to the other once, IAE on
 itself or when either already has 4; `boolean isNextTo(Location other)`; `String
 neighbourList()` gives the neighbours' keys joined by commas, such as "barfleur sark, west
-channel"; getters; `String describe()` gives name, kind and `neighbourList()`. `Port`: `Port(String key, String
-name, String nation)` passes kind `PORT` and chance 0 upward; `String getNation()`; `int
+channel"; getters; `String describe()` gives name, kind, description and `neighbourList()`. `Port`: `Port(String key, String
+name, String description)` passes kind `PORT` and chance 0 upward; `int
 rumPrice()`, halved at Sark; `int upgradePrice(int nextLevel)`; `describe()` adds the
 prices.
 
@@ -198,7 +199,7 @@ that kind, IAE on a negative notoriety; the constructor is private, so the facto
 the only way to build one; `int getGain()`; `describe()` is what the lookout sees, and
 what `look` prints during a meeting.
 
-`Crew`: `Crew(int count, int morale)` caps both; `int lose(int men)` and `int hire(int
+`Crew`: `Crew(int count, int morale)`, IAE when either is out of range; `int lose(int men)` and `int hire(int
 men)` return the number removed or added after capping; `double moraleFactor()`; `int
 drink(int bottlesAvailable)` returns bottles drunk and charges morale for the rum deficit;
 `void
