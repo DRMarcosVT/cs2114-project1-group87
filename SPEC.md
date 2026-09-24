@@ -66,14 +66,14 @@ those bounds, so no caller can drive it outside.
   has none; final `String argument`, the text after that space, `""` when absent. Neither
   is trimmed, lower-cased or stripped of punctuation.
 - `ChannelMap`: final `HashMap<String, Location> stops`, the 18 stops keyed by the stop's
-  name in lower case with a space between words, such as `dover boulogne`; `Port home`,
-  Sark, where the player starts and retires. `ChannelMap.standard()` builds the game's
+  name in lower case with a space between words, such as `dover boulogne`; `getHome()` looks
+  Sark up in `stops` under the key `sark`; Sark is where the player starts and retires. `ChannelMap.standard()` builds the game's
   map from two local `String[][]` tables, `locations` (18 rows of key, name and nation or kind)
   and `links` (25 pairs of keys): its private `add` puts one `Location` or `Port` per row
   into `stops`, keyed by the text the player types; its private `connect` then runs once per link, looks the
   two keys up and calls `Location.connect`, which puts each of the two stops into the
   other's `neighbours` array. Both helpers are private because `standard()` is their only
-  caller. It sets `home`, and nothing changes the map after it returns. `sail` looks the
+  caller. Nothing changes the map after it returns. `sail` looks the
   typed key up in `stops`.
 - `Location`: final `String key`, `name` and `kind`; final `int encounterPercent`, 0 for a
   port, 35 for a sea lane and 60 for the high seas *default*; final `Location[]

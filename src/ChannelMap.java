@@ -13,27 +13,27 @@ import java.util.HashMap;
  */
 public class ChannelMap {
     
-    /** Percent chance that sailing into a sea lane starts an encounter. */
+    /**
+     * probability of an encounter in a sea lane
+     */
     private static final int SEA_LANE_CHANCE = 35;
 
-    /** Percent chance that sailing into a high-seas stretch starts an encounter. */
+    /**
+     * probability of an encounter at the high seas
+     */
     private static final int HIGH_SEAS_CHANCE = 60;
 
     /**
-     * Every stop on the map, keyed by the exact text the player types after
-     * {@code sail}, such as {@code "dover"} or {@code "dover boulogne"}.
+     * Every location on the map, key: what the player types, the value is the location object
      */
     private final HashMap<String, Location> stops = new HashMap<>();
 
-    /** Sark, where the player starts and where {@code retire} is allowed. */
-    private Port home;
-
     /**
      * Builds the game's map. It creates the 18 stops, links them as drawn in
-     * {@code docs/channel-map.png}, and sets Sark as home. Every call returns a new map
+     * {@code docs/channel-map.png}, with Sark as home. Every call returns a new map
      * with its own {@link Location} objects, so two games never share a map.
      *
-     * @return a new map with all 18 stops linked and {@link #getHome()} set to Sark
+     * @return a new map with all 18 stops linked
      */
     public static ChannelMap standard() {
         // One row per stop: {key the player types, name the game prints, third value}.
@@ -105,7 +105,6 @@ public class ChannelMap {
             map.connect(link[0], link[1]);
         }
 
-        map.home = (Port) map.find("sark");
         return map;
     }
 
@@ -141,11 +140,12 @@ public class ChannelMap {
     }
 
     /**
-     * Gets the player's home port.
+     * Gets the player's home port, where the player starts and where {@code retire} is
+     * allowed. {@link #standard()} always stores it under the key {@code "sark"}.
      *
      * @return Sark
      */
     public Port getHome() {
-        return home;
+        return (Port) stops.get("sark");
     }
 }
